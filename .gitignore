@@ -1,0 +1,17 @@
+# IDE / AI assistant tooling
+.idea/
+.junie/
+
+# Local Claude Code settings (shared .claude/skills are committed)
+.claude/settings.local.json
+.claude/*.local.*
+CLAUDE.local.md
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment / secrets
+.env
+.env.*
+!.env.example

@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+# Both jobs are required status checks: functional and budget regressions block merge
+# (constitution III and V).
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm run test:coverage
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npm run test:e2e
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
+
+  # Separate job so timing noise never hides functional failures. CI budgets are looser than
+  # local ones because shared runners are slower and noisier than the reference hardware.
+  performance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run bench
+        env:
+          PERF_BUDGET_MS: 800
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e:perf
+        env:
+          PERF_BUDGET_SCALE: 1.5

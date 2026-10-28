@@ -1,0 +1,14 @@
+.body {
+  font-size: var(--font-size-body);
+  color: var(--color-text);
+}
+
+.lead {
+  font-size: var(--font-size-lead);
+  color: var(--color-text);
+}
+
+.caption {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-muted);
+}

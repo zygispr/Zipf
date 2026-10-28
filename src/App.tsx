@@ -1,4 +1,10 @@
-// Placeholder until T020 wraps the app in MotionConfig + AppLayout.
+import { MotionConfig } from 'motion/react';
+import { AppLayout } from './components/templates/AppLayout';
+
 export function App() {
-  return <h1>Zipf</h1>;
+  return (
+    <MotionConfig reducedMotion="user">
+      <AppLayout>{/* HomePage added in US1 */}</AppLayout>
+    </MotionConfig>
+  );
 }

@@ -1,0 +1,79 @@
+.layout {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100dvh;
+  padding-inline: var(--page-gutter);
+  overflow-x: clip;
+}
+
+/* Animated multi-color background; fixed so it never adds scroll height. */
+.layout::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    120deg,
+    var(--gradient-1),
+    var(--gradient-2),
+    var(--gradient-3),
+    var(--gradient-4),
+    var(--gradient-1)
+  );
+  background-size: 300% 300%;
+  animation: gradient-shift var(--duration-gradient) var(--ease-in-out) infinite alternate;
+}
+
+@keyframes gradient-shift {
+  from {
+    background-position: 0% 50%;
+  }
+
+  to {
+    background-position: 100% 50%;
+  }
+}
+
+.header,
+.main,
+.footer {
+  width: 100%;
+  min-width: 0;
+  max-width: var(--content-max-width);
+  margin-inline: auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-block: var(--space-5);
+}
+
+.logo {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  box-shadow: var(--shadow-md);
+  color: var(--color-on-primary);
+}
+
+.main {
+  padding-block: var(--space-4) var(--space-7);
+}
+
+.footer {
+  padding-block: var(--space-5);
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .layout::before {
+    animation: none;
+  }
+}

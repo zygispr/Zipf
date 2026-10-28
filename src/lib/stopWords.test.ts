@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { readFixtureText } from '../../tests/fixtures/readFixture';
+import { countWords } from './countWords';
 import { ENGLISH_STOP_WORDS, isLikelyEnglish } from './stopWords';
 import { normalizeWord } from './tokenize';
 
@@ -58,6 +60,20 @@ describe('isLikelyEnglish', () => {
         15,
       ),
     ).toBe(false);
+  });
+
+  it('is false for a Russian book (cyrillic.txt)', () => {
+    const { entries, totalWords } = countWords(readFixtureText('cyrillic.txt'), 'cyrillic.txt');
+    expect(totalWords).toBeGreaterThan(150);
+    expect(isLikelyEnglish(entries, totalWords)).toBe(false);
+  });
+
+  it('is true for an English book (known-counts.txt)', () => {
+    const { entries, totalWords } = countWords(
+      readFixtureText('known-counts.txt'),
+      'known-counts.txt',
+    );
+    expect(isLikelyEnglish(entries, totalWords)).toBe(true);
   });
 
   it('is false when there are no words', () => {

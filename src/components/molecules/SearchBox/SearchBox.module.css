@@ -1,0 +1,12 @@
+.search {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-width: 32rem;
+}
+
+/* Reserves one line, so showing a result doesn't shift the table below (CLS). */
+.result {
+  min-height: calc(var(--font-size-body) * var(--line-height-body));
+  overflow-wrap: anywhere;
+}

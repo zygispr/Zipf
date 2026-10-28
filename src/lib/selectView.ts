@@ -1,3 +1,4 @@
+import { ENGLISH_STOP_WORDS } from './stopWords';
 import type { FrequencyResult, ViewSettings, WordEntry } from './types';
 
 export interface ZipfPoint {
@@ -13,6 +14,8 @@ export interface View {
   zipfPoints: ZipfPoint[];
   /** The ideal Zipf curve: `count(1) / rank`. */
   idealAt: (rank: number) => number;
+  /** Words in the book that "Hide common words" removed, so search can say why it misses them. */
+  hiddenWords: ReadonlySet<string>;
 }
 
 export type ViewOptions = Pick<ViewSettings, 'topN' | 'hideCommonWords'>;
@@ -43,10 +46,23 @@ export function sampleZipfRanks(lastRank: number): number[] {
   return ranks;
 }
 
-/** Derives what the results screen shows. Pure, so `useMemo` can cache it. */
-export function selectView(result: FrequencyResult, { topN }: ViewOptions): View {
-  const { totalWords } = result;
-  const entries = result.entries.map(([word, count], index) => ({
+/**
+ * Derives what the results screen shows. Pure, so `useMemo` can cache it. Hiding common words
+ * re-ranks the rest and computes percentages over the words that remain (data model).
+ */
+export function selectView(result: FrequencyResult, { topN, hideCommonWords }: ViewOptions): View {
+  const hiddenWords = new Set<string>();
+  const kept = hideCommonWords
+    ? result.entries.filter(([word]) => {
+        if (!ENGLISH_STOP_WORDS.has(word)) return true;
+        hiddenWords.add(word);
+        return false;
+      })
+    : result.entries;
+  const totalWords = hideCommonWords
+    ? kept.reduce((sum, [, count]) => sum + count, 0)
+    : result.totalWords;
+  const entries = kept.map(([word, count], index) => ({
     word,
     count,
     rank: index + 1,
@@ -61,6 +77,7 @@ export function selectView(result: FrequencyResult, { topN }: ViewOptions): View
       count: entries[rank - 1]?.count ?? 0,
     })),
     idealAt: (rank) => topCount / rank,
+    hiddenWords,
   };
 }
 

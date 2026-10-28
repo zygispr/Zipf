@@ -1,12 +1,35 @@
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MotionConfig } from 'motion/react';
-import { describe, expect, it } from 'vitest';
+import { Profiler, type ComponentProps } from 'react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { WorkerLike } from '../../../hooks/useAnalysis';
 import { ERROR_MESSAGES } from '../../../lib/errorMessages';
 import type { FrequencyResult } from '../../../lib/types';
 import type { AnalyzeRequest, WorkerMessage } from '../../../worker/messages';
 import { HomePage } from './HomePage';
+
+// Counts commits of the chart subtree, to check that typing a search re-renders no chart.
+const chartRenders = vi.hoisted(() => ({ count: 0 }));
+vi.mock('../../organisms/VisualizationPanel', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../organisms/VisualizationPanel')>();
+  return {
+    VisualizationPanel: (props: ComponentProps<typeof actual.VisualizationPanel>) => (
+      <Profiler
+        id="visualization"
+        onRender={() => {
+          chartRenders.count++;
+        }}
+      >
+        <actual.VisualizationPanel {...props} />
+      </Profiler>
+    ),
+  };
+});
+
+beforeEach(() => {
+  chartRenders.count = 0;
+});
 
 class FakeWorker implements WorkerLike {
   onmessage: ((event: MessageEvent<WorkerMessage>) => void) | null = null;
@@ -37,6 +60,23 @@ const resultFor = (bookName: string): FrequencyResult => ({
   ],
   isLikelyEnglish: true,
 });
+
+/** 120 distinct words, so the table has 3 pages; "the", "and", and "of" are common words. */
+const largeResult = (): FrequencyResult => {
+  const entries: [string, number][] = [
+    ['the', 500],
+    ['and', 400],
+    ['of', 300],
+    ...Array.from({ length: 117 }, (_, i): [string, number] => [`word${String(i + 1)}`, 117 - i]),
+  ];
+  return {
+    bookName: 'big.txt',
+    totalWords: entries.reduce((sum, [, count]) => sum + count, 0),
+    distinctWords: entries.length,
+    entries,
+    isLikelyEnglish: true,
+  };
+};
 
 const fileDrag = (files: File[] = []) => ({ dataTransfer: { files, types: ['Files'] } });
 
@@ -169,6 +209,66 @@ describe('HomePage', () => {
     });
     await waitFor(() => {
       expect(screen.queryByText('Drop your book to analyze it')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('refining results (US3)', () => {
+    async function showResult(result: FrequencyResult) {
+      const { user, upload, lastWorker } = setup();
+      await upload(new File(['x'], result.bookName));
+      lastWorker().emit({ type: 'result', result });
+      await screen.findByRole('heading', { level: 2, name: result.bookName });
+      return user;
+    }
+
+    it('typing a search re-renders no chart', async () => {
+      const user = await showResult(largeResult());
+      const before = chartRenders.count;
+      expect(before).toBeGreaterThan(0);
+      await user.type(screen.getByRole('searchbox', { name: 'Find a word' }), 'word5');
+      expect(screen.getByRole('status')).toHaveTextContent('word5: 113 times · rank #8');
+      expect(chartRenders.count).toBe(before);
+    });
+
+    it('hiding common words re-ranks the table, resets it to page 1, and keeps book totals', async () => {
+      const user = await showResult(largeResult());
+      await user.click(screen.getByRole('button', { name: 'Next' }));
+      expect(screen.getByText('Page 2 of 3')).toBeInTheDocument();
+
+      await user.click(screen.getByRole('switch', { name: 'Hide common words' }));
+      expect(screen.getByText('Page 1 of 3')).toBeInTheDocument();
+      const table = screen.getByRole('table', { name: 'All words by frequency' });
+      const firstRow = within(table).getAllByRole('row')[1];
+      expect(firstRow).toHaveTextContent('1word1');
+      expect(within(table).queryByRole('rowheader', { name: 'the' })).not.toBeInTheDocument();
+      expect(screen.getByRole('group', { name: 'Total words' })).toHaveTextContent('8,103');
+      expect(screen.getByText(/book totals/i)).toBeInTheDocument();
+
+      await user.type(screen.getByRole('searchbox', { name: 'Find a word' }), 'the');
+      expect(screen.getByRole('status')).toHaveTextContent('“the” is a common word, hidden');
+
+      await user.click(screen.getByRole('switch', { name: 'Hide common words' }));
+      const restored = screen.getByRole('table', { name: 'All words by frequency' });
+      expect(within(restored).getByRole('rowheader', { name: 'the' })).toBeInTheDocument();
+      expect(screen.getByRole('status')).toHaveTextContent('the: 500 times · rank #1');
+      expect(screen.queryByText(/book totals/i)).not.toBeInTheDocument();
+    });
+
+    it('changes the number of bars with "Top words"', async () => {
+      const user = await showResult(largeResult());
+      expect(screen.getAllByRole('img', { name: /times$/ })).toHaveLength(25);
+      await user.click(screen.getByRole('radio', { name: '10' }));
+      expect(screen.getAllByRole('img', { name: /times$/ })).toHaveLength(10);
+      await user.click(screen.getByRole('radio', { name: '100' }));
+      expect(screen.getAllByRole('img', { name: /times$/ })).toHaveLength(100);
+    });
+
+    it('disables hiding common words for a book that is not English', async () => {
+      await showResult({ ...resultFor('мир.txt'), isLikelyEnglish: false });
+      expect(screen.getByRole('switch', { name: 'Hide common words' })).toHaveAttribute(
+        'aria-disabled',
+        'true',
+      );
     });
   });
 });

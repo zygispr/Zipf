@@ -112,3 +112,62 @@ describe('selectView idealAt', () => {
     expect(idealAt(8)).toBe(0.5);
   });
 });
+
+describe('selectView hideCommonWords', () => {
+  const withStopWords: FrequencyResult = {
+    bookName: 'stop.txt',
+    totalWords: 10,
+    distinctWords: 4,
+    entries: [
+      ['the', 4],
+      ['cat', 3],
+      ['and', 2],
+      ['hat', 1],
+    ],
+    isLikelyEnglish: true,
+  };
+  const hidden = { ...DEFAULT_VIEW_SETTINGS, hideCommonWords: true };
+
+  it('removes stop words and recomputes rank and percent over the filtered total', () => {
+    expect(selectView(withStopWords, hidden).entries).toEqual([
+      { word: 'cat', count: 3, rank: 1, percent: 75 },
+      { word: 'hat', count: 1, rank: 2, percent: 25 },
+    ]);
+  });
+
+  it('builds top and zipfPoints from the filtered entries', () => {
+    const view = selectView(withStopWords, { ...hidden, topN: 10 });
+    expect(view.top.map((entry) => entry.word)).toEqual(['cat', 'hat']);
+    expect(view.zipfPoints).toEqual([
+      { rank: 1, count: 3 },
+      { rank: 2, count: 1 },
+    ]);
+    expect(view.idealAt(1)).toBe(3);
+  });
+
+  it('lists the words it hid, and only those in the book', () => {
+    expect([...selectView(withStopWords, hidden).hiddenWords]).toEqual(['the', 'and']);
+    expect(selectView(withStopWords, hidden).hiddenWords.has('whom')).toBe(false);
+    expect(selectView(withStopWords, DEFAULT_VIEW_SETTINGS).hiddenWords.size).toBe(0);
+  });
+
+  it('equals the unfiltered view when off', () => {
+    const view = selectView(withStopWords, DEFAULT_VIEW_SETTINGS);
+    expect(view.entries.map((entry) => entry.word)).toEqual(['the', 'cat', 'and', 'hat']);
+    expect(view.entries[0]).toEqual({ word: 'the', count: 4, rank: 1, percent: 40 });
+    expect(view.top).toEqual(view.entries);
+  });
+
+  it('gives an empty view when every word is a stop word', () => {
+    const onlyStopWords: FrequencyResult = {
+      ...withStopWords,
+      entries: [['the', 1]],
+      totalWords: 1,
+      distinctWords: 1,
+    };
+    const view = selectView(onlyStopWords, hidden);
+    expect(view.entries).toEqual([]);
+    expect(view.top).toEqual([]);
+    expect(view.zipfPoints).toEqual([]);
+  });
+});

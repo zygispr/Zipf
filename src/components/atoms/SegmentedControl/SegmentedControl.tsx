@@ -2,14 +2,14 @@ import { motion } from 'motion/react';
 import { useId, useRef, type KeyboardEvent, type ReactNode } from 'react';
 import styles from './SegmentedControl.module.css';
 
-export interface SegmentedOption<T extends string> {
+export interface SegmentedOption<T extends string | number> {
   value: T;
   label: string;
   /** Decorative icon shown before the label. */
   icon?: ReactNode;
 }
 
-export interface SegmentedControlProps<T extends string> {
+export interface SegmentedControlProps<T extends string | number> {
   label: string;
   options: readonly SegmentedOption<T>[];
   value: T;
@@ -17,7 +17,7 @@ export interface SegmentedControlProps<T extends string> {
 }
 
 /** Choose one of several options: radio-group semantics with arrow-key navigation. */
-export function SegmentedControl<T extends string>({
+export function SegmentedControl<T extends string | number>({
   label,
   options,
   value,

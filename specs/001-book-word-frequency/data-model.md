@@ -78,10 +78,13 @@ User-controlled view state (not persisted). Owned by a `useReducer` in `HomePage
 - `top`: the first `topN` entries (bar chart and word cloud).
 - `zipfPoints`: sampled `{ rank, count }` points (all ranks ≤ 100, then logarithmically spaced,
   up to 1,000 points) plus `idealAt(rank) = entries[0].count / rank` (research R7).
+- `hiddenWords`: the book's words that "Hide common words" removed (empty when it is off), so
+  search can say a word is hidden instead of "not found".
 The selector is a pure function in `src/lib/`, memoized with `useMemo` in `HomePage`.
 `findWord(view.entries, query)` is a separate pure function that `SearchBox` calls with its
 local query. It returns `{ word, count, rank, percent }` or `null` (not found), using a
-`Map` index built once per view.
+`Map` index built once per view. When `findWord` misses a word that is in `hiddenWords`, `SearchBox`
+says it is a hidden common word, not that it doesn't appear in the book.
 
 ## AnalysisError
 

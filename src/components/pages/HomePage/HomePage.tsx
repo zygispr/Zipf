@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { useCallback, useMemo, type ReactNode } from 'react';
 import { Heading } from '../../atoms/Heading';
 import { DropOverlay } from '../../molecules/DropOverlay';
+import { SearchBox } from '../../molecules/SearchBox';
 import { ProcessingPanel } from '../../organisms/ProcessingPanel';
 import { ResultsToolbar } from '../../organisms/ResultsToolbar';
 import { SummaryStats } from '../../organisms/SummaryStats';
@@ -17,6 +18,8 @@ import type { FrequencyResult } from '../../../lib/types';
 import { useReducedMotion } from '../../../hooks/useReducedMotion';
 
 const WORD_TABLE_ID = 'word-table';
+
+const BOOK_TOTALS_NOTE = 'These are book totals, including the hidden common words.';
 
 interface ResultsScreenProps {
   result: FrequencyResult;
@@ -49,6 +52,11 @@ function ResultsScreen({ result, onNewBook }: ResultsScreenProps) {
         <ResultsToolbar
           visualization={settings.visualization}
           onVisualizationChange={actions.setVisualization}
+          topN={topN}
+          onTopNChange={actions.setTopN}
+          hideCommonWords={hideCommonWords}
+          onHideCommonWordsChange={actions.setHideCommonWords}
+          canHideCommonWords={result.isLikelyEnglish}
           onNewBook={onNewBook}
         />
       }
@@ -57,6 +65,7 @@ function ResultsScreen({ result, onNewBook }: ResultsScreenProps) {
           totalWords={result.totalWords}
           distinctWords={result.distinctWords}
           topEntry={result.entries[0]}
+          note={hideCommonWords ? BOOK_TOTALS_NOTE : undefined}
         />
       }
       visualization={
@@ -66,7 +75,9 @@ function ResultsScreen({ result, onNewBook }: ResultsScreenProps) {
           tableId={WORD_TABLE_ID}
         />
       }
-      table={<WordTable id={WORD_TABLE_ID} entries={view.entries} />}
+      search={<SearchBox entries={view.entries} hiddenWords={view.hiddenWords} />}
+      // A new key remounts the table, so changing the filter goes back to page 1 (research R14).
+      table={<WordTable key={String(hideCommonWords)} id={WORD_TABLE_ID} entries={view.entries} />}
     />
   );
 }

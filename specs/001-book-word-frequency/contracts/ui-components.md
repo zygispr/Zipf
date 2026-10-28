@@ -30,7 +30,7 @@ guarantee. Props are given as intent, not final signatures. Every component fold
 | `DropOverlay`    | Icon, Text                  | Full-screen "Drop your book to analyze it" overlay shown while a file is dragged over the page in any state; `aria-hidden`, `pointer-events: none` |
 | `PrivacyNote`    | Icon, Text                  | States "Your book never leaves your device and is not saved" (FR-005) |
 | `StatCard`       | Heading, Text               | Number animates in (count-up), no animation with reduced motion |
-| `SearchBox`      | TextInput, Text             | Shows count, rank, percent, or "not found" (FR-021); result announced via `aria-live` |
+| `SearchBox`      | TextInput, Text             | Shows count, rank, percent, or "not found" (FR-021); a hidden common word is reported as hidden, not "not found"; result announced via `aria-live` |
 | `ErrorMessage`   | Icon, Text, Button          | Message from data-model `AnalysisError` table + "Choose another book" (FR-025) |
 | `ChartTooltip`   | Tooltip                     | Word, count, rank, percent (FR-015). Opened by hover, keyboard focus, **or tap** through the shared `useWordTooltip` hook; a second tap, tapping outside, or Escape closes it |
 | `Pagination`     | Button, Text                | Previous/Next, "Page x of y", disabled at the ends               |

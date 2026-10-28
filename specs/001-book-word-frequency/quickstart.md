@@ -34,7 +34,7 @@ npm run test:e2e     # Playwright against the production preview build
 |-------------------------|----------------------------------------------------------------|
 | `known-counts.txt`      | Short text with hand-verified counts (case, punctuation, hyphens, contractions, numbers, accents) plus `known-counts.json` |
 | `known-counts.epub`     | Same text as an EPUB with metadata, nav, and CSS that must not be counted |
-| `novel-100k.txt`        | ~100k words of public-domain prose for timing (SC-001)         |
+| `generateZipfText(100_000)` | Generated in tests (`tests/fixtures/generateText.ts`): ~100k words of deterministic Zipf-distributed prose for timing (SC-001) |
 | `cyrillic.txt`          | Non-Latin text; common-word toggle must be disabled            |
 | `empty.txt`, `numbers-only.txt` | `empty` error                                          |
 | `corrupted.epub`        | Truncated zip → `corrupted` error                              |
@@ -52,7 +52,7 @@ by hand against `npm run preview`.
 2. **Privacy (FR-004, SC-006)**: with network logging on, load the page, then upload a book and
    use every feature. **Zero requests** after the initial page load. Reload, and the upload
    screen appears with no previous results.
-3. **Speed and responsiveness (SC-001, SC-005)**: upload `novel-100k.txt`. Results appear in
+3. **Speed and responsiveness (SC-001, SC-005)**: upload a 100k-word generated text. Results appear in
    ≤ 3 s on desktop (and ≤ 6 s with 4× CPU throttling as the phone proxy). The Cancel button
    responds while processing.
 4. **Visualizations (US2)**: the bar chart animates in with 25 bars matching the table. Switch

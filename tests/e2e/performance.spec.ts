@@ -11,14 +11,25 @@ const scale = Number(process.env.PERF_BUDGET_SCALE ?? 1);
 const NOVEL = Buffer.from(generateZipfText(100_000));
 const VIEWS = ['Word cloud', "Zipf's law", 'Bar chart'] as const;
 
+/** A long frame, split into script and rendering time (long-animation-frame). */
+interface LongFrame {
+  startTime: number;
+  duration: number;
+  script: number;
+  render: number;
+  scripts: string;
+}
+
 declare global {
   interface Window {
     __perf: {
       lcp: number;
       cls: number;
       longestInteraction: number;
+      /** When recording started and when each view switch began, to attribute frames to them. */
+      switches: { view: string; at: number }[];
       frames: number[];
-      longFrames: number[];
+      longFrames: LongFrame[];
       recording: boolean;
     };
   }
@@ -33,6 +44,7 @@ function installPerfObservers() {
     lcp: 0,
     cls: 0,
     longestInteraction: 0,
+    switches: [],
     frames: [],
     longFrames: [],
     recording: false,
@@ -60,7 +72,24 @@ function installPerfObservers() {
     { durationThreshold: 16 },
   );
   const onLongFrame = (entry: PerformanceEntry) => {
-    if (perf.recording) perf.longFrames.push(entry.duration);
+    if (!perf.recording) return;
+    // longtask entries (the fallback) have no script or render breakdown.
+    const frame = entry as PerformanceEntry & {
+      renderStart?: number;
+      scripts?: { invoker: string; duration: number }[];
+    };
+    const scripts = frame.scripts ?? [];
+    perf.longFrames.push({
+      startTime: entry.startTime,
+      duration: Math.round(entry.duration),
+      script: Math.round(scripts.reduce((sum, script) => sum + script.duration, 0)),
+      render: Math.round(
+        frame.renderStart ? entry.startTime + entry.duration - frame.renderStart : 0,
+      ),
+      scripts: scripts
+        .map((script) => `${script.invoker} ${String(Math.round(script.duration))}ms`)
+        .join(', '),
+    });
   };
   if (!observe('long-animation-frame', onLongFrame)) observe('longtask', onLongFrame);
   const onFrame = (time: number) => {
@@ -90,30 +119,65 @@ async function timeToResults(page: Page): Promise<number> {
   return Date.now() - start;
 }
 
-/** Switches through every view while recording frames; returns the worst frame and the median. */
+/**
+ * Switches through every view while recording frames. Returns the worst frame, the median frame
+ * interval, and a breakdown for failure messages: the longest gap between frames per view switch
+ * (which includes rasterizing, done off the main thread) and the longest main-thread frames.
+ */
 async function recordViewSwitches(page: Page) {
   await page.evaluate(() => {
     window.__perf.frames = [];
     window.__perf.longFrames = [];
+    window.__perf.switches = [];
     window.__perf.recording = true;
   });
   const control = page.getByRole('radiogroup', { name: 'Visualization' });
   for (const view of VIEWS) {
+    await page.evaluate((name) => {
+      window.__perf.switches.push({ view: name, at: performance.now() });
+    }, view);
     await control.getByRole('radio', { name: view }).click();
     await expect(control.getByRole('radio', { name: view })).toBeChecked();
     // Long enough for the cross-fade and the chart's entrance animation to finish.
     await page.waitForTimeout(800);
   }
-  const { frames, longFrames } = await page.evaluate(() => {
+  const {
+    frames,
+    switches,
+    longFrames: observed,
+  } = await page.evaluate(() => {
     window.__perf.recording = false;
     return window.__perf;
   });
-  const intervals = frames.slice(1).map((time, i) => time - (frames[i] ?? time));
-  const sorted = [...intervals].sort((a, b) => a - b);
+  // Entries arrive after the frame they describe, so attribute them by time and drop any frame
+  // that started before the first switch (such as one from the top-N change before recording).
+  const viewAt = (time: number) => switches.findLast(({ at }) => at <= time)?.view;
+  const longFrames = observed.filter((frame) => viewAt(frame.startTime));
+  const intervals = frames
+    .slice(1)
+    .map((time, i) => ({ view: viewAt(time), gap: time - (frames[i] ?? time) }))
+    .filter((interval) => interval.view);
+  const gaps = intervals.map(({ gap }) => gap);
+  const sorted = [...gaps].sort((a, b) => a - b);
+  const longestGapPerView = VIEWS.map((view) => {
+    const gap = Math.max(0, ...intervals.filter((i) => i.view === view).map((i) => i.gap));
+    return `${view}: ${String(Math.round(gap))} ms`;
+  });
+  const longestFrames = [...longFrames]
+    .sort((a, b) => b.duration - a.duration)
+    .slice(0, 3)
+    .map(
+      (f) =>
+        `${viewAt(f.startTime) ?? ''}: ${String(f.duration)} ms (script ${String(f.script)}, render ${String(f.render)}${f.scripts ? `; ${f.scripts}` : ''})`,
+    );
   return {
-    worstFrame: Math.max(0, ...intervals, ...longFrames),
+    worstFrame: Math.max(0, ...gaps, ...longFrames.map((frame) => frame.duration)),
     medianInterval: sorted[Math.floor(sorted.length / 2)] ?? 0,
     frameCount: frames.length,
+    breakdown: [
+      `Longest gap between frames, by view: ${longestGapPerView.join('; ')}`,
+      `Longest main-thread frames: ${longestFrames.join(' | ') || 'none over 50 ms'}`,
+    ].join('\n'),
   };
 }
 
@@ -193,16 +257,16 @@ test.describe('performance budgets', { tag: '@perf' }, () => {
     });
 
     test('no frame over 50 ms, median frame interval ≤ 20 ms (60 fps target)', async ({ page }) => {
-      const { worstFrame, medianInterval, frameCount } = await recordViewSwitches(page);
+      const { worstFrame, medianInterval, frameCount, breakdown } = await recordViewSwitches(page);
       expect(frameCount).toBeGreaterThan(60);
-      expect(worstFrame).toBeLessThanOrEqual(50 * scale);
+      expect(worstFrame, breakdown).toBeLessThanOrEqual(50 * scale);
       expect(medianInterval).toBeLessThanOrEqual(20 * scale);
     });
 
     test('with 4× CPU throttling, no frame over 100 ms', async ({ page }) => {
       await throttleCpu(page, 4);
-      const { worstFrame } = await recordViewSwitches(page);
-      expect(worstFrame).toBeLessThanOrEqual(100 * scale);
+      const { worstFrame, breakdown } = await recordViewSwitches(page);
+      expect(worstFrame, breakdown).toBeLessThanOrEqual(100 * scale);
     });
   });
 });

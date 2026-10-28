@@ -47,3 +47,9 @@ jobs:
       - run: npm run test:e2e:perf
         env:
           PERF_BUDGET_SCALE: 1.5
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: performance-traces
+          path: test-results/
+          retention-days: 14

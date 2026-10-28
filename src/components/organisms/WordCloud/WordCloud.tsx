@@ -67,8 +67,10 @@ export const WordCloud = memo(function WordCloud({ entries, tableId }: WordCloud
                 fontFamily={WORD_CLOUD_FONT_FAMILY}
                 fontWeight={WORD_CLOUD_FONT_WEIGHT}
                 style={{ fill: chartColor(index) }}
-                initial={reduceMotion ? false : { opacity: 0, scale: 0.3 }}
-                animate={{ opacity: 1, scale: 1 }}
+                // Opacity only: animating scale makes the browser lay out the SVG text again every
+                // frame, which took 40–250 ms per frame under CPU throttling (T103).
+                initial={reduceMotion ? false : { opacity: 0 }}
+                animate={{ opacity: 1 }}
                 transition={
                   reduceMotion
                     ? { duration: 0 }

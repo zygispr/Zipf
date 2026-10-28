@@ -229,15 +229,15 @@ scenario 7).
 
 ### Tests for User Story 4 (write first, confirm they FAIL) ⚠️
 
-- [ ] T095 [P] [US4] Write `src/lib/csv.test.ts` per [csv-export.md](./contracts/csv-export.md): output starts with BOM `﻿`; header row `rank,word,count,percent`; CRLF line endings; a word containing `"`, `,`, CR, or LF is quoted with `"` doubled; percent has 4 decimals with `.` (e.g. `5.1234`); row count = filtered entries + 1; parsing the output back yields the same entries. `csvFilename('My: Book?.epub')` → `My- Book--word-frequencies.csv` (strip the extension, replace `\ / : * ? " < > |` with `-`, append `-word-frequencies.csv`)
-- [ ] T096 [P] [US4] Write `tests/e2e/export.spec.ts`: with `known-counts.txt` loaded, click "Download results", capture `page.waitForEvent('download')`, and assert the filename is `known-counts-word-frequencies.csv` and the content matches `known-counts.json`; repeat with "Hide common words" on and assert the stop words are absent (quickstart scenario 7)
+- [X] T095 [P] [US4] Write `src/lib/csv.test.ts` per [csv-export.md](./contracts/csv-export.md): output starts with BOM `﻿`; header row `rank,word,count,percent`; CRLF line endings; a word containing `"`, `,`, CR, or LF is quoted with `"` doubled; percent has 4 decimals with `.` (e.g. `5.1234`); row count = filtered entries + 1; parsing the output back yields the same entries. `csvFilename('My: Book?.epub')` → `My- Book--word-frequencies.csv` (strip the extension, replace `\ / : * ? " < > |` with `-`, append `-word-frequencies.csv`)
+- [X] T096 [P] [US4] Write `tests/e2e/export.spec.ts`: with `known-counts.txt` loaded, click "Download results", capture `page.waitForEvent('download')`, and assert the filename is `known-counts-word-frequencies.csv` and the content matches `known-counts.json`; repeat with "Hide common words" on and assert the stop words are absent (quickstart scenario 7)
 
 ### Implementation for User Story 4
 
-- [ ] T097 [P] [US4] Implement `src/lib/csv.ts`: `toCsv(entries: WordEntry[]): string` and `csvFilename(bookName: string): string` exactly per [csv-export.md](./contracts/csv-export.md), with the full ranked list for the current filter, not limited to top-N or search
-- [ ] T098 [P] [US4] Implement `src/lib/download.ts`: `downloadTextFile(content: string, filename: string, mime = 'text/csv;charset=utf-8')` that creates a `Blob`, an object URL, and a temporary `<a download>`, clicks it, and revokes the URL on the next tick (no network, compatible with the CSP in T060); add a jsdom test in `src/lib/download.test.ts` (T003 routes this one `src/lib` file to the `dom` project and excludes it from `unit`)
-- [ ] T099 [US4] Extend `ResultsToolbar` with a "Download results" `Button` (download icon) calling `onDownload`, and wire it in `HomePage` to `downloadTextFile(toCsv(view.entries), csvFilename(result.bookName))`; update the tests (depends on T097, T098)
-- [ ] T100 [US4] Run the US4 tests (T095–T096) and make them pass
+- [X] T097 [P] [US4] Implement `src/lib/csv.ts`: `toCsv(entries: WordEntry[]): string` and `csvFilename(bookName: string): string` exactly per [csv-export.md](./contracts/csv-export.md), with the full ranked list for the current filter, not limited to top-N or search
+- [X] T098 [P] [US4] Implement `src/lib/download.ts`: `downloadTextFile(content: string, filename: string, mime = 'text/csv;charset=utf-8')` that creates a `Blob`, an object URL, and a temporary `<a download>`, clicks it, and revokes the URL on the next tick (no network, compatible with the CSP in T060); add a jsdom test in `src/lib/download.test.ts` (T003 routes this one `src/lib` file to the `dom` project and excludes it from `unit`)
+- [X] T099 [US4] Extend `ResultsToolbar` with a "Download results" `Button` (download icon) calling `onDownload`, and wire it in `HomePage` to `downloadTextFile(toCsv(view.entries), csvFilename(result.bookName))`; update the tests (depends on T097, T098)
+- [X] T100 [US4] Run the US4 tests (T095–T096) and make them pass
 
 **Checkpoint**: All four user stories work independently.
 

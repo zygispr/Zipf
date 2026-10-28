@@ -12,6 +12,7 @@ const renderToolbar = (props: Partial<ResultsToolbarProps> = {}) => {
     hideCommonWords: false,
     onHideCommonWordsChange: vi.fn(),
     canHideCommonWords: true,
+    onDownload: vi.fn(),
     onNewBook: vi.fn(),
     ...props,
   };
@@ -24,6 +25,12 @@ describe('ResultsToolbar', () => {
     const { onNewBook } = renderToolbar();
     await userEvent.click(screen.getByRole('button', { name: 'New book' }));
     expect(onNewBook).toHaveBeenCalledTimes(1);
+  });
+
+  it('downloads the results (FR-022)', async () => {
+    const { onDownload } = renderToolbar();
+    await userEvent.click(screen.getByRole('button', { name: 'Download results' }));
+    expect(onDownload).toHaveBeenCalledTimes(1);
   });
 
   it('switches between the three visualizations (FR-014)', async () => {

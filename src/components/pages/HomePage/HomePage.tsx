@@ -13,6 +13,8 @@ import { ResultsLayout } from '../../templates/ResultsLayout';
 import { useAnalysis, type WorkerLike } from '../../../hooks/useAnalysis';
 import { usePageFileDrop } from '../../../hooks/usePageFileDrop';
 import { useViewSettings } from '../../../hooks/useViewSettings';
+import { csvFilename, toCsv } from '../../../lib/csv';
+import { downloadTextFile } from '../../../lib/download';
 import { selectView } from '../../../lib/selectView';
 import type { FrequencyResult } from '../../../lib/types';
 import { useReducedMotion } from '../../../hooks/useReducedMotion';
@@ -57,6 +59,9 @@ function ResultsScreen({ result, onNewBook }: ResultsScreenProps) {
           hideCommonWords={hideCommonWords}
           onHideCommonWordsChange={actions.setHideCommonWords}
           canHideCommonWords={result.isLikelyEnglish}
+          onDownload={() => {
+            downloadTextFile(toCsv(view.entries), csvFilename(result.bookName));
+          }}
           onNewBook={onNewBook}
         />
       }

@@ -28,6 +28,8 @@ export interface ResultsToolbarProps {
   onHideCommonWordsChange: (hideCommonWords: boolean) => void;
   /** False for books that don't look English; the switch is then disabled with an explanation. */
   canHideCommonWords: boolean;
+  /** Saves the full ranked list for the current filter as CSV (FR-022). */
+  onDownload: () => void;
   onNewBook: () => void;
 }
 
@@ -39,6 +41,7 @@ export function ResultsToolbar({
   hideCommonWords,
   onHideCommonWordsChange,
   canHideCommonWords,
+  onDownload,
   onNewBook,
 }: ResultsToolbarProps) {
   return (
@@ -50,9 +53,14 @@ export function ResultsToolbar({
           value={visualization}
           onChange={onVisualizationChange}
         />
-        <Button variant="secondary" leadingIcon={<Icon name="refresh" />} onClick={onNewBook}>
-          New book
-        </Button>
+        <div className={styles.actions}>
+          <Button variant="secondary" leadingIcon={<Icon name="download" />} onClick={onDownload}>
+            Download results
+          </Button>
+          <Button variant="secondary" leadingIcon={<Icon name="refresh" />} onClick={onNewBook}>
+            New book
+          </Button>
+        </div>
       </div>
       <div className={styles.row}>
         <div className={styles.topN}>

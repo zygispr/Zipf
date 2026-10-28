@@ -4,6 +4,7 @@ import { MotionConfig } from 'motion/react';
 import { Profiler, type ComponentProps } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { WorkerLike } from '../../../hooks/useAnalysis';
+import { downloadTextFile } from '../../../lib/download';
 import { ERROR_MESSAGES } from '../../../lib/errorMessages';
 import type { FrequencyResult } from '../../../lib/types';
 import type { AnalyzeRequest, WorkerMessage } from '../../../worker/messages';
@@ -27,8 +28,11 @@ vi.mock('../../organisms/VisualizationPanel', async (importOriginal) => {
   };
 });
 
+vi.mock('../../../lib/download', () => ({ downloadTextFile: vi.fn() }));
+
 beforeEach(() => {
   chartRenders.count = 0;
+  vi.mocked(downloadTextFile).mockClear();
 });
 
 class FakeWorker implements WorkerLike {
@@ -269,6 +273,43 @@ describe('HomePage', () => {
         'aria-disabled',
         'true',
       );
+    });
+  });
+
+  describe('exporting results (US4)', () => {
+    async function showResult(result: FrequencyResult) {
+      const { user, upload, lastWorker } = setup();
+      await upload(new File(['x'], result.bookName));
+      lastWorker().emit({ type: 'result', result });
+      await screen.findByRole('heading', { level: 2, name: result.bookName });
+      return user;
+    }
+
+    const downloaded = () => {
+      const [content, filename] = vi.mocked(downloadTextFile).mock.calls.at(-1) ?? [];
+      return { rows: content?.split('\r\n') ?? [], filename };
+    };
+
+    it('downloads every word, not just the top N, as <book>-word-frequencies.csv', async () => {
+      const user = await showResult(largeResult());
+      await user.click(screen.getByRole('radio', { name: '10' }));
+      await user.click(screen.getByRole('button', { name: 'Download results' }));
+      const { rows, filename } = downloaded();
+      expect(filename).toBe('big-word-frequencies.csv');
+      expect(rows[0]).toBe('\uFEFFrank,word,count,percent');
+      expect(rows[1]).toBe(`1,the,500,${((500 / 8103) * 100).toFixed(4)}`);
+      // 120 words + header, then the empty string after the final CRLF.
+      expect(rows).toHaveLength(122);
+    });
+
+    it('follows the common-word setting', async () => {
+      const user = await showResult(largeResult());
+      await user.click(screen.getByRole('switch', { name: 'Hide common words' }));
+      await user.click(screen.getByRole('button', { name: 'Download results' }));
+      const { rows } = downloaded();
+      expect(rows[1]).toMatch(/^1,word1,117,/);
+      expect(rows.some((row) => row.split(',')[1] === 'the')).toBe(false);
+      expect(rows).toHaveLength(119);
     });
   });
 });

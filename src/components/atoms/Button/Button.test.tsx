@@ -55,4 +55,10 @@ describe('Button', () => {
     const button = screen.getByRole('button', { name: 'Upload' });
     expect(button.firstElementChild).toBe(screen.getByTestId('icon'));
   });
+
+  it('renders a trailing icon after the label', () => {
+    render(<Button trailingIcon={<svg data-testid="icon" aria-hidden="true" />}>Next</Button>);
+    const button = screen.getByRole('button', { name: 'Next' });
+    expect(button.lastElementChild).toBe(screen.getByTestId('icon'));
+  });
 });

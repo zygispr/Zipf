@@ -1,0 +1,23 @@
+.panel {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-4);
+  max-width: 32rem;
+  margin-inline: auto;
+  padding: var(--space-7) var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+}
+
+.title {
+  overflow-wrap: anywhere;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+}

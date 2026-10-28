@@ -1,0 +1,31 @@
+/* Only rendered slots create grid rows, so empty slots add no gaps. */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-5);
+}
+
+.heading {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 768px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+
+  .stats,
+  .visualization,
+  .search,
+  .table {
+    grid-column: 1 / -1;
+  }
+
+  /* Without a toolbar the heading takes the whole row. */
+  .heading:last-child,
+  .heading:has(+ :not(.toolbar)) {
+    grid-column: 1 / -1;
+  }
+}

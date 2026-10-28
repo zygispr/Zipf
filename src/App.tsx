@@ -1,10 +1,13 @@
 import { MotionConfig } from 'motion/react';
+import { HomePage } from './components/pages/HomePage';
 import { AppLayout } from './components/templates/AppLayout';
 
 export function App() {
   return (
     <MotionConfig reducedMotion="user">
-      <AppLayout>{/* HomePage added in US1 */}</AppLayout>
+      <AppLayout>
+        <HomePage />
+      </AppLayout>
     </MotionConfig>
   );
 }

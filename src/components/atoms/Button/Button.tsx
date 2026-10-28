@@ -12,11 +12,14 @@ export type ButtonProps = Omit<
   variant?: ButtonVariant;
   /** Shown before the label, e.g. `<Icon name="upload" />`. Atoms don't import each other. */
   leadingIcon?: ReactNode;
+  /** Shown after the label, e.g. a "next" chevron. */
+  trailingIcon?: ReactNode;
 };
 
 export function Button({
   variant = 'primary',
   leadingIcon,
+  trailingIcon,
   type = 'button',
   disabled,
   className,
@@ -34,6 +37,7 @@ export function Button({
     >
       {leadingIcon}
       {children}
+      {trailingIcon}
     </motion.button>
   );
 }

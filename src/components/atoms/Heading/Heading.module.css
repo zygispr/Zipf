@@ -4,7 +4,9 @@
   letter-spacing: -0.01em;
 }
 
-.heading:focus:not(:focus-visible) {
+/* Headings only receive focus programmatically (tabIndex -1) to orient screen-reader users;
+   they are not controls, so they don't show a focus ring. */
+.heading[tabindex='-1']:focus {
   outline: none;
 }
 

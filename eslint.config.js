@@ -41,6 +41,10 @@ export default tseslint.config(
         tsconfigRootDir: import.meta.dirname,
       },
     },
+    rules: {
+      // A leading underscore marks a parameter that is intentionally unused.
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    },
   },
   reactHooks.configs.flat.recommended,
   jsxA11y.flatConfigs.recommended,

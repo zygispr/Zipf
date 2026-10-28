@@ -1,0 +1,37 @@
+.card {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+  padding: var(--space-4) var(--space-5);
+  border-top: 6px solid var(--tone);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+}
+
+.card[data-tone='primary'] {
+  --tone: var(--chart-1);
+}
+
+.card[data-tone='secondary'] {
+  --tone: var(--chart-2);
+}
+
+.card[data-tone='accent'] {
+  --tone: var(--chart-3);
+}
+
+.label {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.value {
+  overflow-wrap: anywhere;
+  color: var(--color-text);
+  font-size: var(--font-size-h2);
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  line-height: var(--line-height-heading);
+}

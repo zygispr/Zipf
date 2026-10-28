@@ -1,0 +1,12 @@
+/* Only rendered slots create grid rows, so empty slots add no gaps. One column at every width:
+   the toolbar has four controls and needs a full row of its own. */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-5);
+}
+
+.heading {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}

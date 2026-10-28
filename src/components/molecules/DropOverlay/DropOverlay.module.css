@@ -1,0 +1,33 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: var(--page-gutter);
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--chart-1) 35%, transparent),
+    color-mix(in srgb, var(--chart-2) 35%, transparent),
+    color-mix(in srgb, var(--chart-3) 35%, transparent)
+  );
+  backdrop-filter: blur(4px);
+}
+
+.card {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-7);
+  border: 3px dashed var(--color-primary);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+  color: var(--color-primary);
+  text-align: center;
+}
+
+.text {
+  font-weight: 700;
+}

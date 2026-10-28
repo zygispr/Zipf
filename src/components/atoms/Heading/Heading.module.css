@@ -1,0 +1,24 @@
+.heading {
+  color: var(--color-text);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Headings only receive focus programmatically (tabIndex -1) to orient screen-reader users;
+   they are not controls, so they don't show a focus ring. */
+.heading[tabindex='-1']:focus {
+  outline: none;
+}
+
+.h1 {
+  font-size: var(--font-size-h1);
+  font-weight: 800;
+}
+
+.h2 {
+  font-size: var(--font-size-h2);
+}
+
+.h3 {
+  font-size: var(--font-size-h3);
+}

@@ -1,0 +1,33 @@
+/* Shared by BarChart, WordCloud, and ZipfChart. */
+.figure {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.canvas {
+  position: relative;
+  min-width: 0;
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  font-family: var(--font-sans);
+}
+
+.tableLink {
+  justify-self: end;
+  color: var(--color-primary);
+  font-size: var(--font-size-caption);
+  font-weight: 600;
+}
+
+.loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}

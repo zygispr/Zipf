@@ -1,0 +1,4 @@
+.word {
+  font-size: var(--font-size-body);
+  overflow-wrap: anywhere;
+}

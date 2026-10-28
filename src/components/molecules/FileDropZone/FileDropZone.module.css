@@ -1,0 +1,130 @@
+.zone {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  padding: var(--space-7) var(--space-5);
+  border: 3px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+  transition:
+    border-color var(--duration-base) var(--ease-out),
+    background-color var(--duration-base) var(--ease-out),
+    transform var(--duration-base) var(--ease-out);
+}
+
+.zone:hover,
+.zone[data-dragging='true'] {
+  border-color: var(--color-primary);
+}
+
+.zone[data-dragging='true'] {
+  background: var(--color-surface-muted);
+  transform: scale(1.02);
+}
+
+.icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  color: var(--color-on-primary);
+  box-shadow: var(--shadow-md);
+  /* Idle: the icon bobs gently, inviting a drop (FR-016). Transform and opacity only, so the
+     compositor runs it without layout or paint. */
+  animation: icon-float 3.2s var(--ease-in-out) infinite;
+}
+
+/* A soft ring that keeps pulsing outward from behind the icon. The icon's animation makes it a
+   stacking context, so z-index -1 keeps the ring above its background but below the glyph. */
+.icon::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  opacity: 0;
+  animation: icon-ring 3.2s var(--ease-out) infinite;
+}
+
+.zone:hover .icon {
+  animation-duration: 1.6s;
+}
+
+/* A file is over the zone: the icon hops, as if reaching for it. */
+.zone[data-dragging='true'] .icon {
+  animation: icon-hop 0.7s var(--ease-in-out) infinite;
+}
+
+@keyframes icon-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-6px) rotate(-4deg);
+  }
+}
+
+@keyframes icon-ring {
+  0% {
+    opacity: 0.45;
+    transform: scale(1);
+  }
+
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(1.45);
+  }
+}
+
+@keyframes icon-hop {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  50% {
+    transform: translateY(-10px) scale(1.08);
+  }
+}
+
+.title {
+  font-weight: 700;
+}
+
+.choose {
+  margin-top: var(--space-2);
+}
+
+/* Stretch the button's click target over the whole zone. */
+.choose::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-lg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zone {
+    transition: none;
+  }
+
+  .icon,
+  .icon::before,
+  .zone[data-dragging='true'] .icon {
+    animation: none;
+  }
+
+  .zone[data-dragging='true'] {
+    transform: none;
+  }
+}

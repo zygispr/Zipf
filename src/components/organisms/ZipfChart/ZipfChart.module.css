@@ -1,0 +1,82 @@
+.axis line {
+  stroke: var(--color-border);
+}
+
+.axis .grid {
+  stroke: var(--color-surface-muted);
+}
+
+.axis text {
+  fill: var(--color-text-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.axisLabel {
+  fill: var(--color-text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ideal {
+  fill: none;
+  stroke: var(--chart-4);
+  stroke-width: 3px;
+  stroke-linecap: round;
+}
+
+.point {
+  cursor: pointer;
+  outline: none;
+}
+
+.hit {
+  fill: transparent;
+}
+
+.dot {
+  fill: var(--chart-1);
+}
+
+.point:hover .dot,
+.point:focus-visible .dot {
+  r: 7px;
+}
+
+.point:focus-visible .hit {
+  stroke: var(--color-focus);
+  stroke-width: 2px;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2) var(--space-5);
+  margin: 0;
+  padding: 0;
+  color: var(--color-text);
+  font-size: var(--font-size-caption);
+  font-weight: 600;
+  list-style: none;
+}
+
+.legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.swatchPoint {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--chart-1);
+}
+
+.swatchLine {
+  width: 24px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--chart-4);
+}

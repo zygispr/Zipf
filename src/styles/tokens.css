@@ -1,0 +1,132 @@
+/*
+ * Design tokens (research R8). Light theme by default, dark theme via prefers-color-scheme.
+ *
+ * Contrast ratios are WCAG 2.x relative-luminance ratios, measured for every pair below.
+ * Targets (WCAG 2.2 AA): text ≥ 4.5:1, chart colors and UI graphics ≥ 3:1.
+ * Text is checked against bg, surface, surface-muted, and every gradient stop; graphics against
+ * bg, surface, and surface-muted. The lowest ratio of each set is listed.
+ */
+
+:root {
+  color-scheme: light dark;
+
+  /* Surfaces */
+  --color-bg: #f7f5ff;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f1edfd;
+
+  /* Background gradient stops (pastels so text stays readable on top) */
+  --gradient-1: #ede9fe;
+  --gradient-2: #fce7f3;
+  --gradient-3: #e0f2fe;
+  --gradient-4: #fef3c7;
+
+  /* Text — lowest ratio across all surfaces and gradient stops */
+  --color-text: #1c1533; /* ≥ 14.69:1 (vs gradient-1) */
+  --color-text-muted: #574f73; /* ≥ 6.38:1 (vs gradient-1) */
+  --color-text-danger: #b91c1c; /* ≥ 5.45:1 (vs gradient-1) */
+
+  /* Brand */
+  --color-primary: #6d28d9; /* as text ≥ 5.98:1 (vs gradient-1); as graphic ≥ 6.18:1 */
+  --color-on-primary: #ffffff; /* 7.10:1 on primary */
+  --color-secondary: #be185d; /* graphic ≥ 5.25:1 */
+  --color-on-secondary: #ffffff; /* 6.04:1 on secondary */
+  --color-accent: #0e7490; /* graphic ≥ 4.66:1 */
+
+  /* UI graphics */
+  --color-focus: #6d28d9; /* ≥ 6.18:1 */
+  --color-border: #8a82a8; /* ≥ 3.13:1 (vs surface-muted) */
+
+  /* Categorical chart palette — lowest ratio vs bg / surface / surface-muted */
+  --chart-1: #6d28d9; /* ≥ 6.18:1 */
+  --chart-2: #db2777; /* ≥ 4.00:1 */
+  --chart-3: #0369a1; /* ≥ 5.16:1 */
+  --chart-4: #c2410c; /* ≥ 4.51:1 */
+  --chart-5: #047857; /* ≥ 4.77:1 */
+  --chart-6: #b45309; /* ≥ 4.37:1 */
+  --chart-7: #be123c; /* ≥ 5.47:1 */
+  --chart-8: #4338ca; /* ≥ 6.88:1 */
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgb(28 21 51 / 0.08);
+  --shadow-md: 0 4px 12px rgb(28 21 51 / 0.1), 0 1px 3px rgb(28 21 51 / 0.06);
+  --shadow-lg: 0 12px 32px rgb(28 21 51 / 0.14), 0 2px 6px rgb(28 21 51 / 0.08);
+
+  /* Spacing scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --page-gutter: 16px;
+  --content-max-width: 72rem;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+
+  /* Typography: system fonts only, nothing loaded from the network (research R8) */
+  --font-sans:
+    system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+  --font-size-caption: 0.875rem;
+  --font-size-body: 1rem;
+  --font-size-lead: 1.125rem;
+  --font-size-h3: 1.25rem;
+  --font-size-h2: 1.5rem;
+  --font-size-h1: clamp(1.75rem, 1.4rem + 1.5vw, 2.25rem);
+  --line-height-body: 1.5;
+  --line-height-heading: 1.2;
+
+  /* Motion */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 400ms;
+  --duration-gradient: 24s;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #0f0b1f;
+    --color-surface: #1a1530;
+    --color-surface-muted: #251e40;
+
+    --gradient-1: #1e1145;
+    --gradient-2: #3a0f36;
+    --gradient-3: #0b2a43;
+    --gradient-4: #2f2406;
+
+    --color-text: #f4f2ff; /* ≥ 13.31:1 (vs gradient-3) */
+    --color-text-muted: #bcb4dc; /* ≥ 7.50:1 (vs gradient-3) */
+    --color-text-danger: #fca5a5; /* ≥ 7.76:1 (vs gradient-3) */
+
+    --color-primary: #c4b5fd; /* as text ≥ 7.97:1 (vs gradient-3); as graphic ≥ 8.50:1 */
+    --color-on-primary: #1a1030; /* 9.80:1 on primary */
+    --color-secondary: #f472b6; /* graphic ≥ 5.92:1 */
+    --color-on-secondary: #1a1030; /* 6.83:1 on secondary */
+    --color-accent: #22d3ee; /* graphic ≥ 8.68:1 */
+
+    --color-focus: #c4b5fd; /* ≥ 8.50:1 */
+    --color-border: #7d74a3; /* ≥ 3.66:1 (vs surface-muted) */
+
+    --chart-1: #a78bfa; /* ≥ 5.77:1 */
+    --chart-2: #f472b6; /* ≥ 5.92:1 */
+    --chart-3: #38bdf8; /* ≥ 7.32:1 */
+    --chart-4: #fb923c; /* ≥ 6.93:1 */
+    --chart-5: #34d399; /* ≥ 8.16:1 */
+    --chart-6: #fbbf24; /* ≥ 9.40:1 */
+    --chart-7: #fb7185; /* ≥ 5.83:1 */
+    --chart-8: #818cf8; /* ≥ 5.26:1 */
+
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-md: 0 4px 12px rgb(0 0 0 / 0.45), 0 1px 3px rgb(0 0 0 / 0.3);
+    --shadow-lg: 0 12px 32px rgb(0 0 0 / 0.55), 0 2px 6px rgb(0 0 0 / 0.35);
+  }
+}

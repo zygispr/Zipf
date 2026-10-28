@@ -22,9 +22,8 @@ vi.stubGlobal(
   })),
 );
 
-vi.mock('../../../lib/wordCloudLayout', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('../../../lib/wordCloudLayout')>()),
-  computeWordCloudLayout: () => ({ layout: new Promise(() => undefined), cancel: () => undefined }),
+vi.mock('../../../hooks/useWordCloudLayout', () => ({
+  useWordCloudLayout: () => ({ words: null, failed: false }),
 }));
 
 const result: FrequencyResult = {

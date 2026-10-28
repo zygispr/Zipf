@@ -27,7 +27,7 @@ const MAX_ZIPF_POINTS = 1000;
  * Every rank up to 100, then log-spaced ranks up to the last one, at most 1,000 in all. On a log
  * axis this looks the same as plotting every word, and keeps the SVG small (research R7).
  */
-export function sampleZipfRanks(lastRank: number): number[] {
+function sampleZipfRanks(lastRank: number): number[] {
   const ranks: number[] = [];
   for (let rank = 1; rank <= Math.min(EVERY_RANK_UP_TO, lastRank); rank++) ranks.push(rank);
   if (lastRank <= EVERY_RANK_UP_TO) return ranks;

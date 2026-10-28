@@ -1,11 +1,28 @@
-import { expect, type Page } from '@playwright/test';
+import { writeFile } from 'node:fs/promises';
+import { expect, type Page, type TestInfo } from '@playwright/test';
 import { formatPercent } from '../../src/lib/selectView';
+import { generateZipfText } from '../fixtures/generateText';
 import { readExpectedCounts } from '../fixtures/readFixture';
 
 export const chooseBookButton = (page: Page) => page.getByRole('button', { name: 'Choose a book' });
 
 export async function uploadFile(page: Page, path: string) {
   await page.locator('input[type="file"]').first().setInputFiles(path);
+}
+
+// About 40 MB of text, so the analysis is still running while the test looks at it.
+let largeText: string | undefined;
+async function writeLargeBook(testInfo: TestInfo): Promise<string> {
+  largeText ??= generateZipfText(9_000_000);
+  const path = testInfo.outputPath('large-book.txt');
+  await writeFile(path, largeText);
+  return path;
+}
+
+/** Uploads a large book and waits until the processing panel shows progress. */
+export async function startLargeAnalysis(page: Page, testInfo: TestInfo) {
+  await uploadFile(page, await writeLargeBook(testInfo));
+  await expect(page.getByRole('progressbar')).toBeVisible();
 }
 
 /** Drops a text file on `document.body`, as a user dragging a book onto the page would. */

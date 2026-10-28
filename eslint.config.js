@@ -49,8 +49,8 @@ export default tseslint.config(
   reactHooks.configs.flat.recommended,
   jsxA11y.flatConfigs.recommended,
   {
-    // Plain JS config files have no type information worth checking.
-    files: ['**/*.js'],
+    // Plain JS files (configs, scripts/) have no type information worth checking.
+    files: ['**/*.{js,mjs}'],
     extends: [tseslint.configs.disableTypeChecked],
   },
   ...Object.entries(HIGHER_LEVELS).map(([level, higher]) => ({

@@ -22,6 +22,24 @@ test('makes zero network requests after the page has loaded', async ({ page, con
   ).toBeVisible();
   await page.getByRole('button', { name: 'Next' }).click();
   await expect(page.getByText('Page 2 of 3')).toBeVisible();
+  // Every view; the word cloud is laid out in a second worker.
+  const views = page.getByRole('radiogroup', { name: 'Visualization' });
+  for (const view of ['Word cloud', "Zipf's law", 'Bar chart']) {
+    await views.getByRole('radio', { name: view }).click();
+    await expect(page.locator('[data-word-index]').first()).toBeVisible();
+  }
+  await page
+    .getByRole('radiogroup', { name: 'Top words' })
+    .getByRole('radio', { name: '100' })
+    .click();
+  await page.getByRole('switch', { name: 'Hide common words' }).click();
+  await page.getByRole('searchbox', { name: 'Find a word' }).fill('librarian');
+  await expect(page.getByRole('status')).toContainText('librarian');
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    page.getByRole('button', { name: 'Download results' }).click(),
+  ]);
+  expect(download.suggestedFilename()).toBe('known-counts-word-frequencies.csv');
   await page.getByRole('button', { name: 'New book' }).click();
   await expect(chooseBookButton(page)).toBeVisible();
 

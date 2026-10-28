@@ -1,27 +1,18 @@
 // US1 end-to-end flows (quickstart scenarios 1, 8, 9).
 import { writeFile } from 'node:fs/promises';
-import { expect, test, type Page, type TestInfo } from '@playwright/test';
+import { expect, test, type TestInfo } from '@playwright/test';
 import { ERROR_MESSAGES } from '../../src/lib/errorMessages';
 import type { AnalysisErrorCode } from '../../src/lib/types';
-import { generateZipfText } from '../fixtures/generateText';
 import { fixturePath, readFixtureText } from '../fixtures/readFixture';
-import { chooseBookButton, dropTextFile, expectKnownCountsResults, uploadFile } from './helpers';
+import {
+  chooseBookButton,
+  dropTextFile,
+  expectKnownCountsResults,
+  startLargeAnalysis,
+  uploadFile,
+} from './helpers';
 
 const knownText = readFixtureText('known-counts.txt');
-
-// About 40 MB of text, so the analysis is still running when the replacement arrives.
-let largeText: string | undefined;
-async function writeLargeBook(testInfo: TestInfo): Promise<string> {
-  largeText ??= generateZipfText(9_000_000);
-  const path = testInfo.outputPath('large-book.txt');
-  await writeFile(path, largeText);
-  return path;
-}
-
-async function startLargeAnalysis(page: Page, testInfo: TestInfo) {
-  await uploadFile(page, await writeLargeBook(testInfo));
-  await expect(page.getByRole('progressbar')).toBeVisible();
-}
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
@@ -30,6 +21,15 @@ test.beforeEach(async ({ page }) => {
 test('shows the drop zone with the privacy note', async ({ page }) => {
   await expect(chooseBookButton(page)).toBeVisible();
   await expect(page.getByText('Your book never leaves your device and is not saved')).toBeVisible();
+});
+
+test('the drop zone animates while idle, and is still with reduced motion (FR-016, FR-017)', async ({
+  page,
+}) => {
+  const running = () => page.evaluate(() => document.getAnimations().length);
+  await expect.poll(running).toBeGreaterThan(0);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect.poll(running).toBe(0);
 });
 
 test('analyzes known-counts.txt with exact counts', async ({ page }) => {

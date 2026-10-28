@@ -115,7 +115,8 @@ src/
 │   ├── useAnalysis.ts    # analysisReducer (pure) + worker lifecycle (R14)
 │   ├── useViewSettings.ts  # view-settings reducer (pure) (R14)
 │   ├── usePageFileDrop.ts  # window-level drag-and-drop in every state (FR-001)
-│   └── useWordTooltip.ts   # hover/focus/tap tooltip state shared by the 3 charts (FR-015)
+│   ├── useWordTooltip.ts   # hover/focus/tap tooltip state shared by the 3 charts (FR-015)
+│   └── useWordCloudLayout.ts  # runs the word-cloud placement in its worker
 ├── lib/                  # pure, React-free logic (each with a colocated .test.ts)
 │   ├── types.ts
 │   ├── tokenize.ts       # regex tokenizer + normalization (R5)
@@ -128,13 +129,16 @@ src/
 │   ├── findWord.ts       # search lookup for SearchBox
 │   ├── validateFile.ts   # format + size checks
 │   ├── errorMessages.ts  # plain-language message per AnalysisErrorCode
-│   ├── wordCloudLayout.ts  # d3-cloud wrapper with injectable text measuring
+│   ├── wordCloudLayout.ts  # word-cloud sizing (√count); main thread, no d3-cloud
+│   ├── placeWords.ts     # d3-cloud placement with injectable text measuring (worker only)
 │   ├── csv.ts            # CSV serialization (contracts/csv-export.md)
 │   └── download.ts       # Blob + object-URL download (tested in the dom project)
 ├── worker/
 │   ├── messages.ts       # protocol types (contracts/worker-messages.md)
 │   ├── handleAnalyze.ts  # pure analysis pipeline; no `self`, importable in Node tests
-│   └── analysis.worker.ts  # entry point: onmessage → handleAnalyze → postMessage
+│   ├── analysis.worker.ts  # entry point: onmessage → handleAnalyze → postMessage
+│   ├── wordCloudMessages.ts  # word-cloud worker protocol
+│   └── wordCloud.worker.ts   # placeWords on an OffscreenCanvas
 ├── test/
 │   └── setup.ts          # jest-dom matchers + cleanup for the dom project
 └── styles/
@@ -167,3 +171,4 @@ contract, end-to-end, and benchmark suites live under `tests/`.
 | Five-level atomic component hierarchy | Explicit user requirement; keeps ~30 components organized with enforced dependency direction | A flat `components/` folder is simpler but does not meet the stated requirement |
 | No production metrics or logging (Principle VI asks for structured logs and key metrics) | Any telemetry would send data off the device, contradicting FR-004/SC-006 and the CSP `connect-src 'none'` guarantee | Privacy-safe analytics still needs a network request; static-host request logs (page loads) are the only metric, and errors are shown to the user directly |
 | Web Worker instead of main-thread processing | Required to keep animations smooth and Cancel responsive for files up to 50 MB (FR-024, SC-005) | Chunked main-thread processing still stalls on large EPUB unzip/decoding and cannot be stopped as cleanly as `terminate()` |
+| Second Web Worker for the word-cloud layout (`src/worker/wordCloud.worker.ts`) | d3-cloud draws every word to a canvas and builds its collision masks in one step: 127 ms on the main thread with 4× CPU throttling, which broke the 100 ms frame budget when switching to the word cloud (T103). In the worker, on an `OffscreenCanvas`, no frame is over 100 ms | Deferring the layout (idle callback, timeout) only moves the same 127 ms long task, so it still blocks animation and input; d3-cloud can't split that step |

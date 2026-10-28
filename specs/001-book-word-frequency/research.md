@@ -122,7 +122,10 @@ pinned exactly in `package.json` (Constitution, Quality Standards: pinned depend
   top-N or filters change, and `MotionConfig reducedMotion="user"` for FR-017.
   - **Bar chart**: horizontal bars for the top N words, animated width and reorder.
   - **Word cloud**: `d3-cloud` layout computed for the top N (max 100) words; font size from a
-    square-root scale of count; words fade and scale in with staggered delays.
+    square-root scale of count; words fade and scale in with staggered delays. Sizing runs on the
+    main thread; placement runs in a second inline worker on an `OffscreenCanvas`, because
+    d3-cloud's text rasterization is a single long task (127 ms at 4× CPU throttling) that would
+    freeze the view-switch animation (plan Complexity Tracking).
   - **Zipf chart**: log–log scatter of rank vs. count plus the ideal curve
     `count(r) = count(1) / r` (spec assumption). To keep SVG fast for 20k–50k distinct words,
     plot all of the first 100 ranks, then logarithmically spaced ranks, up to 1,000 points. On a

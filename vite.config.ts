@@ -30,6 +30,8 @@ function contentSecurityPolicy(): Plugin {
 }
 
 export default defineConfig({
+  // GitHub Pages serves the site from /<repo>/; deploy.yml sets BASE_PATH (research R13).
+  base: process.env.BASE_PATH ?? '/',
   plugins: [react(), contentSecurityPolicy()],
   worker: { format: 'es' },
   test: {

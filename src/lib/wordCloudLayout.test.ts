@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { WordEntry } from './types';
-import { computeWordCloudLayout, fontSizeScale } from './wordCloudLayout';
+import { fontSizeScale, sizeWords } from './wordCloudLayout';
 
 const entries = (n: number): WordEntry[] =>
   Array.from({ length: n }, (_, i) => ({
@@ -9,35 +9,6 @@ const entries = (n: number): WordEntry[] =>
     rank: i + 1,
     percent: 1,
   }));
-
-/**
- * A stand-in for <canvas>: text is measured by its length, and every other pixel row is "ink".
- * Like the gaps between real glyph strokes, the empty rows let d3-cloud pack words that overlap the
- * cloud's bounding box, while words still collide.
- */
-function fakeCanvas(): HTMLCanvasElement {
-  const context = {
-    font: '',
-    fillStyle: '',
-    textAlign: '',
-    lineWidth: 0,
-    clearRect: () => undefined,
-    save: () => undefined,
-    restore: () => undefined,
-    translate: () => undefined,
-    rotate: () => undefined,
-    fillText: () => undefined,
-    strokeText: () => undefined,
-    measureText: (text: string) => ({ width: text.length * 8 }),
-    getImageData: (_x: number, _y: number, width: number, height: number) => {
-      const data = new Uint8ClampedArray(Math.max(1, width * height) * 4);
-      for (let row = 0; row < height; row += 2)
-        data.fill(255, row * width * 4, (row + 1) * width * 4);
-      return { data };
-    },
-  };
-  return { width: 1, height: 1, getContext: () => context } as unknown as HTMLCanvasElement;
-}
 
 describe('fontSizeScale', () => {
   it('maps the smallest count to 14 px and the largest to 72 px', () => {
@@ -55,43 +26,20 @@ describe('fontSizeScale', () => {
   });
 });
 
-describe('computeWordCloudLayout', () => {
-  it('positions every word with a size, rotation, and its entry data', async () => {
-    const input = entries(20);
-    const { layout } = computeWordCloudLayout(input, { width: 1200, height: 900 }, fakeCanvas);
-    const words = await layout;
-    expect(words).toHaveLength(20);
-    const scale = fontSizeScale(input);
-    for (const placed of words) {
-      const entry = input.find((e) => e.word === placed.word);
-      expect(entry).toBeDefined();
-      expect(placed).toMatchObject({ count: entry?.count, rank: entry?.rank });
-      // d3-cloud truncates font sizes to whole pixels.
-      expect(placed.size).toBe(Math.trunc(scale(placed.count)));
-      expect([0, 90]).toContain(placed.rotate);
-      expect(Number.isFinite(placed.x) && Number.isFinite(placed.y)).toBe(true);
-    }
+describe('sizeWords', () => {
+  it('keeps at most 100 words, in order, with a font size from √count', () => {
+    const input = entries(150);
+    const words = sizeWords(input, 1200);
+    expect(words).toHaveLength(100);
+    expect(words.map((word) => word.word)).toEqual(input.slice(0, 100).map((e) => e.word));
+    const scale = fontSizeScale(input.slice(0, 100));
+    for (const word of words) expect(word.size).toBeCloseTo(scale(word.count));
+    expect(words[0]).toMatchObject({ word: 'word1', count: 1000, rank: 1, percent: 1 });
   });
 
-  it('lays out at most 100 words', async () => {
-    const { layout } = computeWordCloudLayout(
-      entries(150),
-      { width: 2000, height: 2000 },
-      fakeCanvas,
-    );
-    expect((await layout).length).toBeLessThanOrEqual(100);
-  });
-
-  it('is stable: the same input gives the same layout', async () => {
-    const run = () =>
-      computeWordCloudLayout(entries(15), { width: 600, height: 400 }, fakeCanvas).layout;
-    expect(await run()).toEqual(await run());
-  });
-
-  it('can be cancelled', () => {
-    const { cancel } = computeWordCloudLayout(entries(15), { width: 600, height: 400 }, fakeCanvas);
-    expect(() => {
-      cancel();
-    }).not.toThrow();
+  it('shrinks the largest words on narrow screens, but not below 28 px', () => {
+    expect(sizeWords(entries(10), 1200)[0]?.size).toBeCloseTo(72);
+    expect(sizeWords(entries(10), 320)[0]?.size).toBeCloseTo(40);
+    expect(sizeWords(entries(10), 100)[0]?.size).toBeCloseTo(28);
   });
 });

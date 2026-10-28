@@ -66,7 +66,7 @@ export default defineConfig({
           include: [
             'src/*.test.tsx',
             'src/components/**/*.test.tsx',
-            'src/hooks/**/*.test.ts',
+            'src/hooks/**/*.test.{ts,tsx}',
             'src/lib/download.test.ts',
           ],
           setupFiles: ['src/test/setup.ts'],

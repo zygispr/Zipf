@@ -4,21 +4,26 @@ import { Pagination } from '../../molecules/Pagination';
 import { formatCount, formatPercent } from '../../../lib/selectView';
 import type { WordEntry } from '../../../lib/types';
 import styles from './WordTable.module.css';
+import { useReducedMotion } from '../../../hooks/useReducedMotion';
 
 /** Rows per page (research R12): keeps the DOM small for 50k-word vocabularies. */
 const PAGE_SIZE = 50;
 
 export interface WordTableProps {
   entries: WordEntry[];
+  /** Target of the charts' "View as table" links. */
+  id?: string;
 }
 
-export const WordTable = memo(function WordTable({ entries }: WordTableProps) {
+export const WordTable = memo(function WordTable({ entries, id }: WordTableProps) {
   const [page, setPage] = useState(1);
+  const reduceMotion = useReducedMotion();
   const pageCount = Math.max(1, Math.ceil(entries.length / PAGE_SIZE));
   const rows = entries.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
-    <div className={styles.wrapper}>
+    // tabIndex -1: following a "View as table" link moves focus here.
+    <div id={id} tabIndex={id ? -1 : undefined} className={styles.wrapper}>
       <div className={styles.scroller}>
         <table className={styles.table}>
           <caption className={styles.caption}>All words by frequency</caption>
@@ -38,7 +43,7 @@ export const WordTable = memo(function WordTable({ entries }: WordTableProps) {
           </thead>
           <motion.tbody
             key={page}
-            initial={{ opacity: 0 }}
+            initial={reduceMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.2 }}
           >

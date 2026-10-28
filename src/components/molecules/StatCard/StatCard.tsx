@@ -1,14 +1,9 @@
-import {
-  animate,
-  motion,
-  useMotionValue,
-  useReducedMotionConfig,
-  useTransform,
-} from 'motion/react';
+import { animate, motion, useMotionValue, useTransform } from 'motion/react';
 import { useEffect, useId } from 'react';
 import { Text } from '../../atoms/Text';
 import { formatCount } from '../../../lib/selectView';
 import styles from './StatCard.module.css';
+import { useReducedMotion } from '../../../hooks/useReducedMotion';
 
 export type StatTone = 'primary' | 'secondary' | 'accent';
 
@@ -21,7 +16,7 @@ export interface StatCardProps {
 }
 
 function CountUp({ value }: { value: number }) {
-  const reduceMotion = useReducedMotionConfig() ?? false;
+  const reduceMotion = useReducedMotion();
   const count = useMotionValue(reduceMotion ? value : 0);
   const text = useTransform(count, (latest) => formatCount(Math.round(latest)));
 

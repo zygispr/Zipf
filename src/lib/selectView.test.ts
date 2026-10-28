@@ -46,3 +46,69 @@ describe('formatCount', () => {
     expect(formatCount(7)).toBe('7');
   });
 });
+
+function resultWith(distinct: number): FrequencyResult {
+  const entries: [string, number][] = Array.from({ length: distinct }, (_, i) => [
+    `w${String(i + 1)}`,
+    distinct - i,
+  ]);
+  return {
+    bookName: 'many.txt',
+    totalWords: entries.reduce((sum, [, count]) => sum + count, 0),
+    distinctWords: distinct,
+    entries,
+    isLikelyEnglish: true,
+  };
+}
+
+describe('selectView top', () => {
+  it('is the first topN entries', () => {
+    const view = selectView(resultWith(200), DEFAULT_VIEW_SETTINGS);
+    expect(view.top).toEqual(view.entries.slice(0, 25));
+    expect(selectView(resultWith(200), { ...DEFAULT_VIEW_SETTINGS, topN: 10 }).top).toHaveLength(
+      10,
+    );
+  });
+
+  it('has fewer entries when the book has fewer distinct words, with no placeholders', () => {
+    expect(selectView(result, { ...DEFAULT_VIEW_SETTINGS, topN: 100 }).top).toEqual(
+      selectView(result, DEFAULT_VIEW_SETTINGS).entries,
+    );
+  });
+});
+
+describe('selectView zipfPoints', () => {
+  it('includes every rank when there are at most 100', () => {
+    const { zipfPoints } = selectView(resultWith(50), DEFAULT_VIEW_SETTINGS);
+    expect(zipfPoints.map((p) => p.rank)).toEqual(Array.from({ length: 50 }, (_, i) => i + 1));
+  });
+
+  it('samples large vocabularies: ranks ≤ 100, then log-spaced, at most 1,000 points', () => {
+    const big = resultWith(50_000);
+    const { zipfPoints } = selectView(big, DEFAULT_VIEW_SETTINGS);
+    const ranks = zipfPoints.map((p) => p.rank);
+    expect(ranks.slice(0, 100)).toEqual(Array.from({ length: 100 }, (_, i) => i + 1));
+    expect(zipfPoints.length).toBeLessThanOrEqual(1000);
+    expect(zipfPoints.length).toBeGreaterThan(950);
+    expect(ranks.at(-1)).toBe(50_000);
+    for (let i = 1; i < ranks.length; i++) {
+      expect(ranks[i]).toBeGreaterThan(ranks[i - 1] ?? Infinity);
+    }
+    // Log spacing: the ratio between neighbours stays small and roughly constant.
+    for (let i = 101; i < ranks.length; i++) {
+      expect((ranks[i] ?? 0) / (ranks[i - 1] ?? 1)).toBeLessThan(1.02);
+    }
+    for (const { rank, count } of zipfPoints) {
+      expect(count).toBe(big.entries[rank - 1]?.[1]);
+    }
+  });
+});
+
+describe('selectView idealAt', () => {
+  it('is the top count divided by the rank', () => {
+    const { idealAt } = selectView(result, DEFAULT_VIEW_SETTINGS);
+    expect(idealAt(1)).toBe(4);
+    expect(idealAt(4)).toBe(1);
+    expect(idealAt(8)).toBe(0.5);
+  });
+});

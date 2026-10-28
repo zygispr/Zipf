@@ -92,6 +92,22 @@ describe('HomePage', () => {
     });
   });
 
+  it('shows the bar chart and switches visualizations (US2)', async () => {
+    const { user, upload, lastWorker } = setup();
+    await upload(new File(['the cat'], 'novel.txt'));
+    lastWorker().emit({ type: 'result', result: resultFor('novel.txt') });
+    expect(await screen.findByRole('group', { name: /bar chart/i })).toBeInTheDocument();
+    expect(screen.getAllByRole('img', { name: /times$/ })).toHaveLength(3);
+
+    await user.click(screen.getByRole('radio', { name: "Zipf's law" }));
+    expect(await screen.findByRole('group', { name: /zipf/i })).toBeInTheDocument();
+    const link = screen.getByRole('link', { name: 'View as table' });
+    const tableId = link.getAttribute('href')?.slice(1) ?? '';
+    expect(document.getElementById(tableId)).toContainElement(
+      screen.getByRole('table', { name: 'All words by frequency' }),
+    );
+  });
+
   it('shows worker errors and recovers with "Choose another book"', async () => {
     const { user, upload, lastWorker } = setup();
     await upload(new File(['x'], 'locked.epub'));

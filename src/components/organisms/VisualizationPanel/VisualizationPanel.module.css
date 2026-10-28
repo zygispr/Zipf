@@ -1,0 +1,25 @@
+.panel {
+  /* Reserves space so switching charts doesn't shift the page (CLS < 0.1). */
+  min-height: 28rem;
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  background-image: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--chart-1) 6%, transparent),
+    color-mix(in srgb, var(--chart-3) 6%, transparent)
+  );
+}
+
+.view {
+  display: grid;
+  gap: var(--space-4);
+  will-change: opacity;
+}
+
+@media (max-width: 480px) {
+  .panel {
+    padding: var(--space-3);
+  }
+}

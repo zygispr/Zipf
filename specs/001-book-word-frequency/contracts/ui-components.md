@@ -26,12 +26,13 @@ guarantee. Props are given as intent, not final signatures. Every component fold
 
 | Component        | Composes                    | Must guarantee                                                  |
 |------------------|-----------------------------|-----------------------------------------------------------------|
-| `FileDropZone`   | Icon, Text, Button          | Accepts drop **and** file picker (FR-001); keyboard-activatable; `accept=".txt,.epub"`; drag-over highlight animation |
+| `FileDropZone`   | Icon, Text, Button          | Accepts drop **and** file picker (FR-001); keyboard-activatable; `accept=".txt,.epub"`; drag-over highlight animation; stops drop propagation so the page-wide handler doesn't process the same file twice |
+| `DropOverlay`    | Icon, Text                  | Full-screen "Drop your book to analyze it" overlay shown while a file is dragged over the page in any state; `aria-hidden`, `pointer-events: none` |
 | `PrivacyNote`    | Icon, Text                  | States "Your book never leaves your device and is not saved" (FR-005) |
 | `StatCard`       | Heading, Text               | Number animates in (count-up), no animation with reduced motion |
 | `SearchBox`      | TextInput, Text             | Shows count, rank, percent, or "not found" (FR-021); result announced via `aria-live` |
 | `ErrorMessage`   | Icon, Text, Button          | Message from data-model `AnalysisError` table + "Choose another book" (FR-025) |
-| `ChartTooltip`   | Tooltip                     | Word, count, rank, percent (FR-015)                              |
+| `ChartTooltip`   | Tooltip                     | Word, count, rank, percent (FR-015). Opened by hover, keyboard focus, **or tap** through the shared `useWordTooltip` hook; a second tap, tapping outside, or Escape closes it |
 | `Pagination`     | Button, Text                | Previous/Next, "Page x of y", disabled at the ends               |
 
 ## Organisms — `src/components/organisms/`
@@ -39,7 +40,7 @@ guarantee. Props are given as intent, not final signatures. Every component fold
 | Component            | Composes                              | Must guarantee                                           |
 |----------------------|---------------------------------------|----------------------------------------------------------|
 | `UploadPanel`        | FileDropZone, PrivacyNote, ErrorMessage | Validates type and size before processing (FR-002, FR-003) |
-| `ProcessingPanel`    | Spinner, ProgressBar, Button          | Shows stage + progress; Cancel returns to idle (FR-024)   |
+| `ProcessingPanel`    | Spinner, ProgressBar, Button          | Shows stage + progress; Cancel returns to idle (FR-024); "Choose a different book" replaces the current analysis (spec edge case) |
 | `SummaryStats`       | StatCard ×3                           | Total, distinct, top word (FR-011)                        |
 | `ResultsToolbar`     | SegmentedControl ×2, Toggle, Button   | View type (FR-014), top-N (FR-020), hide common words (FR-019, disabled with explanation if not English), Download (FR-022), New book (FR-023) |
 | `BarChart`           | ChartTooltip                          | Top-N bars match counts exactly (FR-013); animated reorder and resize |
@@ -59,7 +60,7 @@ guarantee. Props are given as intent, not final signatures. Every component fold
 
 | Component  | Responsibility                                                                         |
 |------------|----------------------------------------------------------------------------------------|
-| `HomePage` | The only component connected to app state (research R14). Uses `useAnalysis` and the view-settings reducer, memoizes `selectView`, and renders by state: idle → UploadPanel, processing → ProcessingPanel, results → ResultsLayout, error → UploadPanel with ErrorMessage. `AnimatePresence` transitions between states |
+| `HomePage` | The only component connected to app state (research R14). Uses `useAnalysis` and the view-settings reducer, memoizes `selectView`, and renders by state: idle → UploadPanel, processing → ProcessingPanel, results → ResultsLayout, error → UploadPanel with ErrorMessage. `AnimatePresence` transitions between states. Uses `usePageFileDrop` so a book dropped **anywhere on the page, in any state** starts a new analysis, and shows `DropOverlay` while dragging (FR-001) |
 
 ## State ownership rules (research R14)
 
@@ -67,7 +68,7 @@ guarantee. Props are given as intent, not final signatures. Every component fold
   organisms and below receive data and callbacks as props, and none of them use Context or
   global stores.
 - Ephemeral UI state is owned by the one component that uses it: `SearchBox` (query),
-  `WordTable` (page), charts (hovered word).
+  `WordTable` (page), charts (active tooltip word, via `useWordTooltip`).
 - `BarChart`, `WordCloud`, `ZipfChart`, and `WordTable` are wrapped in `memo`. Typing in
   `SearchBox` MUST NOT re-render any chart (checked with a render-count test).
 
@@ -79,3 +80,5 @@ guarantee. Props are given as intent, not final signatures. Every component fold
 - `MotionConfig reducedMotion="user"` wraps the app; CSS animations are also disabled under
   `prefers-reduced-motion: reduce` (FR-017).
 - Visual feedback within 100 ms of any interaction (constitution Quality Standards).
+- Chart elements are tappable on touch devices with targets of at least 24×24 px (FR-015,
+  WCAG 2.2 target size).

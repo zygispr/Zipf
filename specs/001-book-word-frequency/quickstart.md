@@ -24,8 +24,11 @@ npm run preview      # serve dist/ at http://localhost:4173
 ```bash
 npm run check        # format check + lint + type check + unit/component/contract tests
 npm run test:coverage  # fails below 80% lines overall or 90% in src/lib
-npm run bench        # fails if analyzing 1M words exceeds 400 ms
-npm run test:e2e     # Playwright against the production preview build
+npm run bench        # fails if the median of 5 runs analyzing 1M words exceeds 400 ms
+                     # (PERF_BUDGET_MS overrides it; CI uses 800)
+npm run test:e2e     # Playwright functional, privacy and a11y suites against the preview build
+npm run test:e2e:perf  # @perf suite: time to results, Core Web Vitals, frame budget
+                       # (PERF_BUDGET_SCALE multiplies budgets; CI uses 1.5)
 ```
 
 ## Test fixtures (`tests/fixtures/`)
@@ -38,8 +41,9 @@ npm run test:e2e     # Playwright against the production preview build
 | `cyrillic.txt`          | Non-Latin text; common-word toggle must be disabled            |
 | `empty.txt`, `numbers-only.txt` | `empty` error                                          |
 | `corrupted.epub`        | Truncated zip → `corrupted` error                              |
+| `zip-bomb.epub`         | Under 1 MB compressed, 210 MB declared uncompressed → `corrupted`, rejected before inflating |
 | `drm.epub`              | Has `META-INF/encryption.xml` with encrypted content → `protected` |
-| `big.txt` (generated in the test, 51 MB) | `too-large` error                             |
+| `big.txt` (written to a temp file in the test, 51 MB) | `too-large` error. Passed to Playwright by path, since buffers over 50 MB are rejected |
 
 ## Validation scenarios
 
@@ -67,8 +71,10 @@ by hand against `npm run preview`.
    matches the table for the current filter.
 8. **Errors (FR-025)**: upload each error fixture plus a `.pdf`. Each shows the message from
    the data-model error table and a "Choose another book" action.
-9. **Replace while processing (edge case)**: drop a second book while the first is processing.
-   Only the second book's results appear.
+9. **Replace a book (edge case, FR-001)**: while a large book is processing, drop a second book
+   anywhere on the page. A "Drop your book" overlay appears, and only the second book's results
+   appear. Repeat with the processing panel's "Choose a different book" button, and by dropping a
+   book onto the results screen.
 10. **Accessibility and layout (FR-018)**: do scenarios 1, 4, and 6 using only the keyboard.
     At 320 px width there's no horizontal scroll. Automated axe check: no serious or critical
     violations.

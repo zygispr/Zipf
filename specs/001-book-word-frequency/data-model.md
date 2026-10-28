@@ -66,7 +66,7 @@ User-controlled view state (not persisted). Owned by a `useReducer` in `HomePage
 |---------------|--------------|----------|---------|-----------------------------------------------------------|
 | `query`       | `SearchBox`  | string   | `''`    | Trimmed, normalized like tokens before lookup (FR-021)    |
 | `page`        | `WordTable`  | number   | `1`     | 50 rows per page (research R12); the table is remounted with `key={hideCommonWords}`, so the page goes back to 1 when the filter changes |
-| `hoveredWord` | each chart   | string \| null | `null` | Drives `ChartTooltip` (FR-015)                     |
+| `activeWord`  | each chart, via `useWordTooltip` | string \| null | `null` | Set by hover, focus, or tap; cleared by leave, blur, a second tap, tapping outside, or Escape; drives `ChartTooltip` (FR-015) |
 
 ## Derived view (selector, not stored)
 
@@ -90,7 +90,7 @@ local query. It returns `{ word, count, rank, percent }` or `null` (not found), 
 | `unsupported`  | Extension is not .txt or .epub                              | "We can read .txt and .epub books. Please choose one of those." |
 | `too-large`    | size > 50 MB                                                | "This file is larger than 50 MB. Please choose a smaller book." |
 | `empty`        | No words found (blank file, image-only book)                | "We couldn't find any readable words in this book." |
-| `corrupted`    | Decoding or unzip failed, missing container/OPF, encrypted zip | "This file couldn't be read. It may be damaged. Try another copy." |
+| `corrupted`    | Decoding or unzip failed, missing container/OPF, encrypted zip, or declared uncompressed EPUB content > 200 MB (`MAX_UNCOMPRESSED_BYTES`, zip-bomb guard, research R4) | "This file couldn't be read. It may be damaged. Try another copy." |
 | `protected`    | EPUB has DRM encryption (research R4)                       | "This book is copy-protected (DRM), so its text can't be read." |
 
 Each message has a "Choose another book" action that resets to `idle`.
@@ -114,7 +114,11 @@ its own) plus the worker lifecycle in the hook (research R14). Actions: `fileSel
      │         reset() from error or results          │                │
      └─────────────────────────────────────────────────┴────────────────┘
 
-  selectFile(valid) while processing → terminate current worker, start new one (spec edge case)
+  selectFile(valid) from ANY state (processing, results, error) → terminate any current worker,
+  discard the previous analysis, start processing the new file. Files can be dropped anywhere on
+  the page at any time, and the processing panel has a "Choose a different book" button (spec
+  edge case, FR-001)
+  selectFile(invalid) from any state → error (the previous analysis is discarded)
 ```
 
 | State        | Data held                                   |

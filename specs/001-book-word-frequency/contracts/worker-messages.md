@@ -1,8 +1,13 @@
 # Contract: Analysis Worker Messages
 
 The only internal boundary in the app: the main thread (`useAnalysis` hook) ↔ the analysis Web
-Worker (`src/worker/analysis.worker.ts`). Types live in `src/worker/messages.ts` and are imported
-by both sides.
+Worker. Types live in `src/worker/messages.ts` and are imported by both sides. The worker is
+split into two files:
+
+- `src/worker/handleAnalyze.ts`: the whole pipeline as a pure async function
+  `handleAnalyze(request, emit)`. It never references `self`, so Node tests can import it.
+- `src/worker/analysis.worker.ts`: the entry point only,
+  `self.onmessage = (e) => void handleAnalyze(e.data, (m) => self.postMessage(m))`.
 
 One worker instance handles exactly **one** analysis. To cancel or replace an analysis, the main
 thread calls `worker.terminate()`, and there is no cancel message. That rule keeps the protocol
@@ -58,7 +63,10 @@ type WorkerMessage = ProgressMessage | ResultMessage | ErrorMessage;
 
 ## Contract tests (`tests/contract/worker-messages.test.ts`)
 
-The worker module exports its handler as a pure async function
-`handleAnalyze(request, emit)`. The tests call it directly with fixture files and check
-guarantees 1, 2, 3, 5, and 6 for: a `.txt` fixture, an `.epub` fixture, an empty file, a corrupted
-zip, and a DRM-encrypted EPUB.
+The tests import `handleAnalyze` from `src/worker/handleAnalyze.ts`, call it directly with
+fixture files, and check guarantees 1, 2, 3, 5, and 6 for: a `.txt` fixture, an `.epub` fixture,
+an empty file, a corrupted zip, a zip bomb (more than 200 MB declared uncompressed →
+`corrupted`, rejected before inflating), and a DRM-encrypted EPUB. Guarantee 4 (no network, no
+storage) is enforced by the ESLint ban on network and storage APIs in `src/` and checked end to
+end by `tests/e2e/privacy.spec.ts`, which records requests at the browser-context level so
+worker requests are included (research R2).

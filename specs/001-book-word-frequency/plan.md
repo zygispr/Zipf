@@ -40,9 +40,19 @@ last two major versions; static hosting (GitHub Pages)
 
 **Project Type**: Single-page web application (frontend only)
 
-**Performance Goals**: Results for a 100k-word novel in ≤ 3 s desktop / ≤ 6 s mid-range phone
-(SC-001); analysis of 1M words ≤ 400 ms in the benchmark; 60 fps animations; LCP < 2.5 s,
-INP < 200 ms, CLS < 0.1; initial JS ≤ 150 KB gzipped
+**Performance Goals**: every budget has an automated check that blocks merge (constitution V):
+
+| Budget | Verified by |
+|--------|-------------|
+| Results for a 100k-word novel in ≤ 3 s desktop / ≤ 6 s with 4× CPU throttling as the mid-range phone proxy (SC-001) | `tests/e2e/performance.spec.ts` (T103) |
+| Analysis of 1M words ≤ 400 ms (median of 5; 800 ms on CI runners) | `tests/perf/analyze.perf.test.ts` (T034) |
+| Smooth animations, targeting 60 fps: no frame > 50 ms and median frame interval ≤ 20 ms while switching views | T103 frame-budget test |
+| LCP < 2.5 s, INP < 200 ms (interaction-duration proxy), CLS < 0.1 | T103 Core Web Vitals test |
+| Cancel/interaction feedback ≤ 100 ms | T103 |
+| Initial JS ≤ 150 KB gzipped | `scripts/check-bundle-size.mjs` (T104) |
+
+Timing budgets in Playwright are multiplied by `PERF_BUDGET_SCALE` (1.5 on CI) and run in a
+separate CI job (research R10).
 
 **Constraints**: Zero network requests after page load (SC-006); files ≤ 50 MB; UI stays
 responsive during processing; WCAG 2.2 AA; respects `prefers-reduced-motion`; works from 320 px
@@ -56,14 +66,14 @@ and ~10M tokens per book; any number of visitors (static CDN, all computing on t
 
 | Principle | Gate | Pre-research | Post-design |
 |-----------|------|--------------|-------------|
-| I. Code Quality | Formatter, linter, type checker with zero errors; explicit error handling; review | PASS: Prettier + ESLint (type-checked, a11y, hooks) + `tsc --noEmit` in `npm run check` (R11) | PASS: all worker failures map to typed `AnalysisError` codes; worker never throws silently ([worker-messages](./contracts/worker-messages.md) guarantee 5) |
+| I. Code Quality | Formatter, linter, type checker with zero errors; explicit error handling; review | PASS: Prettier + ESLint (type-checked, a11y, hooks) + `tsc --noEmit` in `npm run check` (R11) | PASS: all worker failures map to typed `AnalysisError` codes; worker never throws silently ([worker-messages](./contracts/worker-messages.md) guarantee 5); ESLint bans network and storage APIs in `src/` to enforce the privacy guarantee, including inside the worker (R2) |
 | II. Simplicity | YAGNI; abstractions need 2 uses; dependencies justified | PASS: no backend, no state library, no RPC library, no CSS framework | PASS: 4 small runtime dependencies, each justified in R4/R7. State management uses React built-ins after evaluating Context, Zustand, Redux Toolkit, and Jotai (R14). Atomic design is user-mandated and covered under Complexity Tracking |
-| III. Testing (NON-NEGOTIABLE) | Automated tests for every behavior; failing test first for bugs; contract tests; suite green before merge | PASS: unit + component + contract + e2e + bench layers defined (R10) | PASS: contract tests for worker protocol and CSV; fixtures with hand-verified counts; coverage 80% / 90% for `src/lib` |
+| III. Testing (NON-NEGOTIABLE) | Automated tests for every behavior; failing test first for bugs; contract tests; suite green before merge | PASS: unit + component + contract + e2e + bench layers defined (R10) | PASS: contract tests for worker protocol and CSV; fixtures with hand-verified counts; coverage 80% / 90% for `src/lib`; timing tests isolated in their own CI job with retries and flaky-test reporting (R10) |
 | IV. UX First | User journeys in spec; feedback for every operation; WCAG 2.2 AA; plain-language errors | PASS: spec has 4 prioritized stories with acceptance scenarios | PASS: progress + cancel, error table with plain messages, keyboard/ARIA requirements per component ([ui-components](./contracts/ui-components.md)), reduced motion, axe check in e2e |
-| V. Performance | Measurable targets; no unbounded work; benchmarks block regressions | PASS: targets above | PASS: single-pass O(n) counting in a worker; table paginated; Zipf points capped at 1,000; word cloud capped at 100; benchmark with 400 ms budget |
-| VI. Scalability | Stateless; pagination; work off the request path; load assumptions + 10x bottleneck; observability | PASS: static site, no server state | PASS: heavy work runs in a worker. Load assumption: 100k-word books, 10x = 1M words → first bottleneck is the sort of distinct words (O(d log d)) and the main-thread transfer, both fine at ≤ 50k distinct. Book-size bottleneck: 50 MB EPUB unzip memory, capped by FR-003. Observability: no server to monitor; client errors are shown to the user, and analytics are deliberately excluded for privacy (see Complexity Tracking) |
+| V. Performance | Measurable targets; no unbounded work; benchmarks block regressions | PASS: targets above | PASS: single-pass O(n) counting in a worker; table paginated; Zipf points capped at 1,000; word cloud capped at 100; EPUB decompression capped at 200 MB (R4); every Performance Goal above has a merge-blocking automated check |
+| VI. Scalability | Stateless; pagination; work off the request path; load assumptions + 10x bottleneck; observability | PASS: static site, no server state | PASS: heavy work runs in a worker. Load assumption: 100k-word books, 10x = 1M words → first bottleneck is the sort of distinct words (O(d log d)) and the main-thread transfer, both fine at ≤ 50k distinct. Book-size bottleneck: EPUB unzip memory, capped at 50 MB compressed (FR-003) and 200 MB uncompressed (R4). Observability: no server to monitor; client errors are shown to the user, and analytics are deliberately excluded for privacy (see Complexity Tracking) |
 
-**Result**: All gates pass. Two deviations are justified below.
+**Result**: All gates pass. Three deviations are justified below.
 
 ## Project Structure
 
@@ -95,42 +105,53 @@ src/
 ├── components/
 │   ├── atoms/            # Button, Icon, Heading, Text, Spinner, ProgressBar, Toggle,
 │   │                     # SegmentedControl, TextInput, Tooltip
-│   ├── molecules/        # FileDropZone, PrivacyNote, StatCard, SearchBox, ErrorMessage,
-│   │                     # ChartTooltip, Pagination
+│   ├── molecules/        # FileDropZone, DropOverlay, PrivacyNote, StatCard, SearchBox,
+│   │                     # ErrorMessage, ChartTooltip, Pagination
 │   ├── organisms/        # UploadPanel, ProcessingPanel, SummaryStats, ResultsToolbar,
 │   │                     # BarChart, WordCloud, ZipfChart, VisualizationPanel, WordTable
 │   ├── templates/        # AppLayout, ResultsLayout
 │   └── pages/            # HomePage
 ├── hooks/
 │   ├── useAnalysis.ts    # analysisReducer (pure) + worker lifecycle (R14)
-│   └── useViewSettings.ts  # view-settings reducer (pure) (R14)
+│   ├── useViewSettings.ts  # view-settings reducer (pure) (R14)
+│   ├── usePageFileDrop.ts  # window-level drag-and-drop in every state (FR-001)
+│   └── useWordTooltip.ts   # hover/focus/tap tooltip state shared by the 3 charts (FR-015)
 ├── lib/                  # pure, React-free logic (each with a colocated .test.ts)
 │   ├── types.ts
 │   ├── tokenize.ts       # regex tokenizer + normalization (R5)
 │   ├── countWords.ts     # Map counting + sorting → FrequencyResult
 │   ├── decodeText.ts     # UTF-8/UTF-16/windows-1252 decoding (R3)
-│   ├── epub.ts           # container/OPF/spine reading + DRM check (R4)
+│   ├── epub.ts           # container/OPF/spine reading, DRM check, zip-bomb guard (R4)
 │   ├── xhtmlToText.ts    # tag stripping + entity decoding (R4)
 │   ├── stopWords.ts      # English list + isLikelyEnglish (R6)
 │   ├── selectView.ts     # filtering, ranks, top-N, Zipf sampling
 │   ├── findWord.ts       # search lookup for SearchBox
 │   ├── validateFile.ts   # format + size checks
-│   └── csv.ts            # CSV serialization (contracts/csv-export.md)
+│   ├── errorMessages.ts  # plain-language message per AnalysisErrorCode
+│   ├── wordCloudLayout.ts  # d3-cloud wrapper with injectable text measuring
+│   ├── csv.ts            # CSV serialization (contracts/csv-export.md)
+│   └── download.ts       # Blob + object-URL download (tested in the dom project)
 ├── worker/
 │   ├── messages.ts       # protocol types (contracts/worker-messages.md)
-│   └── analysis.worker.ts  # handleAnalyze + onmessage wiring
+│   ├── handleAnalyze.ts  # pure analysis pipeline; no `self`, importable in Node tests
+│   └── analysis.worker.ts  # entry point: onmessage → handleAnalyze → postMessage
+├── test/
+│   └── setup.ts          # jest-dom matchers + cleanup for the dom project
 └── styles/
     ├── tokens.css        # color palette, gradients, spacing, motion durations
     └── global.css
 
 tests/
 ├── contract/             # worker-messages.test.ts
-├── e2e/                  # Playwright: flows, privacy, performance, a11y
-├── bench/                # analyze.bench.ts
-└── fixtures/             # see quickstart.md
+├── e2e/                  # Playwright: flows, privacy, a11y; performance.spec.ts tagged @perf
+├── perf/                 # analyze.perf.test.ts (median-of-5 timing budget)
+└── fixtures/             # see quickstart.md; build-fixtures.ts, generateText.ts
+
+scripts/
+└── check-bundle-size.mjs # initial-JS gzip budget
 
 .github/workflows/
-├── ci.yml                # check, coverage, bench, e2e on every push/PR
+├── ci.yml                # jobs: quality (check, coverage, e2e) + performance (perf, @perf e2e)
 └── deploy.yml            # build + GitHub Pages on main
 ```
 

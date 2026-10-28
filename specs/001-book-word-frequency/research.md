@@ -21,11 +21,23 @@ pinned exactly in `package.json` (Constitution, Quality Standards: pinned depend
 - **Decision**: All parsing and counting runs in the browser inside a dedicated Web Worker. The
   app is a static site with no backend. A production-only Content-Security-Policy with
   `connect-src 'none'` is injected into `index.html` so the page cannot make network requests
-  after load.
+  after load. Three layers enforce the privacy promise:
+  1. **Page CSP** (`<meta>`): blocks network access from the main thread.
+  2. **Code-level ban** (ESLint, enforced in CI): `fetch`, `XMLHttpRequest`, `WebSocket`,
+     `EventSource`, `importScripts`, `navigator.sendBeacon`, and storage APIs are banned
+     throughout `src/`. This is the guard for the **worker**. A dedicated worker loaded from its
+     own same-origin URL gets its CSP from its own HTTP response headers, not from the page's
+     `<meta>` tag, and static hosts such as GitHub Pages cannot set headers. So the page CSP does
+     **not** cover the worker.
+  3. **End-to-end check**: Playwright records every request at the browser-context level, which
+     includes worker requests, and fails on any request after load (SC-006).
 - **Rationale**: Meets FR-004/SC-006 by construction (the book never leaves the device) and
   keeps the UI thread free for animations and the cancel button (FR-024, SC-005). Cancelling is
-  `worker.terminate()`, which also discards all book data held by the worker. The CSP makes the
-  privacy promise enforceable, not just intended.
+  `worker.terminate()`, which also discards all book data held by the worker. Together, the three
+  layers make the privacy promise enforced, not just intended. No single layer is relied on:
+  the CSP alone misses the worker, and the lint rule alone misses third-party code.
+- **Future hardening**: if the app moves to a host that can set response headers, also send
+  `Content-Security-Policy: connect-src 'none'` as a header, which then covers the worker too.
 - **Alternatives considered**: Main-thread processing in chunks (rejected: harder to cancel,
   janks animations on 50 MB inputs); server-side processing (rejected: violates FR-004);
   Comlink for worker RPC (rejected: a single request/response message pair does not need an RPC
@@ -51,6 +63,19 @@ pinned exactly in `package.json` (Constitution, Quality Standards: pinned depend
   excluded (FR-002).
 - **DRM detection**: If `META-INF/encryption.xml` lists encrypted resources other than the IDPF
   or Adobe font-obfuscation algorithms, report `protected` (spec edge case).
+- **Zip-bomb guard** (constitution Security: validate external input): the 50 MB limit (FR-003)
+  only bounds the *compressed* file. `unzipSync` is called with a `filter` callback, which
+  `fflate` runs for each entry **before** inflating it. The callback adds up each entry's
+  declared `originalSize` and rejects the book as `corrupted` once the total exceeds
+  `MAX_UNCOMPRESSED_BYTES` = 200 MB, which is about 30 times the uncompressed text of a very
+  long novel. It also skips entries that are never read (images, fonts, audio), which saves
+  memory on illustrated books. A falsely small `originalSize` can't get around the limit:
+  `unzipSync` in `fflate` 0.8 inflates each entry into a buffer allocated at its declared size,
+  so memory use is limited by the declared sizes the guard already checked. A lying entry just
+  produces cut-off (garbled) text, never unbounded memory. Add a fixture with a false
+  `originalSize` to T029 if implementation shows otherwise.
+- **Spine filtering**: only spine items with media type `application/xhtml+xml` or `text/html`
+  are read, so SVG or image spine items never become counted text.
 - **Rationale**: `fflate` is ~8 KB gzipped, fast, has no dependencies, and works in workers.
   `DOMParser` is not available inside Web Workers, and EPUB content is well-formed XHTML, so a
   focused text extractor is simpler than shipping an XML parser.
@@ -61,8 +86,13 @@ pinned exactly in `package.json` (Constitution, Quality Standards: pinned depend
 ## R5. Tokenization and counting rules
 
 - **Decision**: One Unicode-aware regular expression,
-  `/\p{L}[\p{L}\p{M}]*(?:['’\-‐][\p{L}\p{M}]+)*/gu`, followed by
-  `normalize('NFC')` and `toLowerCase()`; counts go in a `Map<string, number>`. Sorted by count
+  `/\p{L}[\p{L}\p{M}]*(?:['’\-‐][\p{L}\p{M}]+)*/gu`, followed by one shared
+  `normalizeWord()`: `normalize('NFC')`, `toLowerCase()`, then **unify punctuation variants**
+  inside words, so the curly apostrophe `’` (U+2019) becomes `'` and the Unicode hyphen `‐`
+  (U+2010) becomes `-`. Books often mix typographic and plain apostrophes, and without this
+  "don’t" and "don't" would be counted as two different words (SC-002). The same
+  `normalizeWord` is used for stop-word lookup and search, so all three agree. Counts go in a
+  `Map<string, number>`. Sorted by count
   descending, then word ascending using `localeCompare` with a fixed `'en'` collator (FR-007).
 - **Rationale**: Implements FR-008 (case-insensitive, punctuation ignored), FR-009 (hyphens and
   apostrophes kept inside words, numbers excluded because digits are not `\p{L}`), and FR-010
@@ -137,13 +167,26 @@ pinned exactly in `package.json` (Constitution, Quality Standards: pinned depend
   - **Component (Vitest + jsdom 30.1.3 + Testing Library 16.3.3 + user-event 14.6.8 +
     jest-dom 7.0.1)**: every atom, molecule, and organism; keyboard and ARIA behavior.
   - **Contract/integration (Vitest)**: the worker message protocol (`contracts/worker-messages.md`)
-    tested by calling the worker's handler function directly, plus the `useAnalysis` hook with a
-    fake worker.
+    tested by calling `handleAnalyze` directly. It lives in `src/worker/handleAnalyze.ts`, a
+    pure module with no `self` access, so Node can import it, while `analysis.worker.ts` is a
+    two-line `onmessage` entry point. The `useAnalysis` hook is also tested with a fake worker.
   - **End-to-end (Playwright 1.64.1, Chromium + WebKit mobile viewport)**: upload `.txt` and
     `.epub` fixtures, switch views, filter, search, export; assert **zero network requests
-    after page load** (SC-006); measure time to results for a 100k-word fixture (SC-001); run
-    `@axe-core/playwright` 4.14.0 accessibility scans on each screen state (Principle IV).
-  - **Benchmarks (`vitest bench`)**: analysis of a generated 1M-word text, budget 400 ms on CI.
+    after page load** (SC-006); run `@axe-core/playwright` 4.14.0 accessibility scans on each
+    screen state (Principle IV); tap tooltips in the mobile WebKit project (FR-015). A 51 MB
+    upload is written to a temporary file and passed by path, because Playwright rejects
+    in-memory files over 50 MB.
+  - **Performance (blocks merge, Principle V)**: (a) `tests/perf/analyze.perf.test.ts`, a plain
+    Vitest test (`vitest bench` cannot fail on a budget) that takes the median of 5 timed runs of
+    analyzing 1M generated words, budget 400 ms locally and 800 ms on CI (`PERF_BUDGET_MS`).
+    (b) Playwright `@perf` tests: time to results for 100k words (SC-001), Cancel
+    responsiveness (SC-005), Core Web Vitals (LCP, CLS, interaction duration as an INP proxy),
+    and an animation frame budget (no frame > 50 ms, median ≤ 20 ms) while switching views.
+    Budgets are multiplied by `PERF_BUDGET_SCALE` (1.5 on CI).
+  - **Flakiness control** (Principle III): performance tests run in a **separate CI job**, so
+    timing noise never hides functional results. CI retries failed Playwright tests twice, and
+    tests that pass only on retry are reported as flaky so they can be fixed or quarantined within
+    a day.
   - **Coverage**: `@vitest/coverage-v8` 5.0.5 with thresholds of 80% lines (90% for `src/lib/`)
     enforced in CI.
 - **Rationale**: Covers Principle III, including contract tests for the only inter-component

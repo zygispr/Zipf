@@ -8,6 +8,11 @@ import { startLargeAnalysis, uploadFile } from './helpers';
 
 const scale = Number(process.env.PERF_BUDGET_SCALE ?? 1);
 
+// Playwright's trace snapshots the whole DOM around every action and assertion, in the page and on
+// its main thread. With a chart's thousands of elements that is a 100–300 ms frame on a CI runner,
+// which the frame budgets would count against the app.
+test.use({ trace: 'off' });
+
 const NOVEL = Buffer.from(generateZipfText(100_000));
 const VIEWS = ['Word cloud', "Zipf's law", 'Bar chart'] as const;
 

@@ -33,6 +33,9 @@ export default defineConfig({
   // GitHub Pages serves the site from /<repo>/; deploy.yml sets BASE_PATH (research R13).
   base: process.env.BASE_PATH ?? '/',
   plugins: [react(), contentSecurityPolicy()],
+  // Only the workers import these, so the dev server's startup scan misses them. Without this it
+  // finds them on first use and reloads the page, losing the book that was just analyzed.
+  optimizeDeps: { include: ['d3-cloud', 'fflate'] },
   worker: { format: 'es' },
   test: {
     coverage: {

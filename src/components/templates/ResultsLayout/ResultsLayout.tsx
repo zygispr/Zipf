@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import styles from './ResultsLayout.module.css';
+import styles from './ResultsLayout.module.scss';
 
 export interface ResultsLayoutProps {
   heading?: ReactNode;

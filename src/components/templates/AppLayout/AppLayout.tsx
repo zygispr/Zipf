@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { Heading } from '../../atoms/Heading';
 import { Icon } from '../../atoms/Icon';
 import { Text } from '../../atoms/Text';
-import styles from './AppLayout.module.css';
+import styles from './AppLayout.module.scss';
 
 export interface AppLayoutProps {
   children?: ReactNode;

@@ -59,10 +59,10 @@ and research R6:
 
 **Purpose**: Install the compiler and wire up scripts and config. No stylesheet changes yet.
 
-- [ ] T001 Add `sass` as an exact-pinned development dependency with `npm install --save-dev --save-exact sass@1.105.1`, updating `package.json` and `package-lock.json`. Do not add `sass-embedded`; Vite would prefer it over `sass` (research R1).
-- [ ] T002 In `vite.config.ts`, add `css: { preprocessorOptions: { scss: { loadPaths: [<absolute path of src/styles>] } } }`. Build the absolute path from the config file's own location (for example, `fileURLToPath(new URL('./src/styles', import.meta.url))`). Add a one-line comment citing research R2: it lets any stylesheet write `@use 'media';` without a relative path.
-- [ ] T003 In `package.json` scripts, add `"test:visual": "playwright test --grep @visual --project chromium"`, and change `test:e2e` to `playwright test --grep-invert \"@perf|@visual\"` so CI never runs the visual suite (research R7).
-- [ ] T004 [P] Add `tests/e2e/*-snapshots/` to `.gitignore` under the "Node / build output" group, with a comment saying the visual baselines are machine-specific and must not be committed (research R7).
+- [X] T001 Add `sass` as an exact-pinned development dependency with `npm install --save-dev --save-exact sass@1.105.1`, updating `package.json` and `package-lock.json`. Do not add `sass-embedded`; Vite would prefer it over `sass` (research R1).
+- [X] T002 In `vite.config.ts`, add `css: { preprocessorOptions: { scss: { loadPaths: [<absolute path of src/styles>] } } }`. Build the absolute path from the config file's own location (for example, `fileURLToPath(new URL('./src/styles', import.meta.url))`). Add a one-line comment citing research R2: it lets any stylesheet write `@use 'media';` without a relative path.
+- [X] T003 In `package.json` scripts, add `"test:visual": "playwright test --grep @visual --project chromium"`, and change `test:e2e` to `playwright test --grep-invert \"@perf|@visual\"` so CI never runs the visual suite (research R7).
+- [X] T004 [P] Add `tests/e2e/*-snapshots/` to `.gitignore` under the "Node / build output" group, with a comment saying the visual baselines are machine-specific and must not be committed (research R7).
 
 ---
 
@@ -73,7 +73,7 @@ test that passes on the CSS version. Both must exist before any stylesheet is re
 
 **⚠️ CRITICAL**: No stylesheet may be renamed or edited until T006 and T008 are done.
 
-- [ ] T005 Create `tests/e2e/visual.spec.ts` (research R7), tagged `@visual` the same way `tests/e2e/performance.spec.ts` tags `@perf`. Start the file with a comment saying what the suite is for and that baselines are local.
+- [X] T005 Create `tests/e2e/visual.spec.ts` (research R7), tagged `@visual` the same way `tests/e2e/performance.spec.ts` tags `@perf`. Start the file with a comment saying what the suite is for and that baselines are local.
   - **Helpers**: reuse `chooseBookButton`, `uploadFile`, and `startLargeAnalysis` from `tests/e2e/helpers.ts`, and `fixturePath` from `tests/fixtures/readFixture.ts`. Reach each state the way `tests/e2e/a11y.spec.ts` does.
   - **Conditions**: loop over colour scheme (`light`, `dark`), viewport (desktop `{ width: 1280, height: 720 }` and phone `{ width: 390, height: 844 }`), and reduced motion (`no-preference`, `reduce`). Set them with `page.emulateMedia` and `test.use({ viewport })`. Name each screenshot `<state>-<scheme>-<viewport>-<motion>.png`.
   - **Screens and states**:
@@ -89,7 +89,7 @@ test that passes on the CSS version. Both must exist before any stylesheet is re
     10. Zipf's law view;
     11. results filtered and searched: the "Hide common words" switch on and `the` typed into "Find a word".
   - **Assertion**: before each screenshot, `await page.evaluate(() => document.fonts.ready)`. Then `await expect(page).toHaveScreenshot(name, { fullPage: true, animations: 'disabled', maxDiffPixels: 0, mask })`.
-- [ ] T006 With the stylesheets still CSS, capture baselines with `npm run test:visual -- --update-snapshots`. Then run `npm run test:visual` twice more; both runs must pass with zero changed pixels, which proves the suite is deterministic. If a state flickers, fix its wait or mask in `tests/e2e/visual.spec.ts` and recapture. Commit T001–T006. The snapshots stay untracked.
+- [X] T006 With the stylesheets still CSS, capture baselines with `npm run test:visual -- --update-snapshots`. Then run `npm run test:visual` twice more; both runs must pass with zero changed pixels, which proves the suite is deterministic. If a state flickers, fix its wait or mask in `tests/e2e/visual.spec.ts` and recapture. Commit T001–T006. The snapshots stay untracked.
 - [ ] T007 Create `tests/contract/stylesheets.test.ts` in the existing `unit` Vitest project (it already includes `tests/contract/**/*.test.ts`). Open with a comment pointing to `specs/002-scss-styling/contracts/stylesheet-authoring.md`, like `tests/contract/worker-messages.test.ts` does. It must pass on today's CSS, so match both `.module.css` and `.module.scss` until the conversion is done. Implement:
   - **Setup**: in `beforeAll`, `const config = await resolveConfig({}, 'build')` from `vite`. Find every stylesheet under `src/` with `globSync('src/**/*.{css,scss}')` from `node:fs`.
   - **"every stylesheet compiles"**: for each file, `await preprocessCSS(source, absolutePath, config)` must resolve. On failure, rethrow with the file path prepended, keeping Sass's message, which carries the line (FR-011).

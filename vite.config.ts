@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import react from '@vitejs/plugin-react';
 import type { Plugin } from 'vite';
 import { defineConfig } from 'vitest/config';
@@ -37,6 +38,12 @@ export default defineConfig({
   // finds them on first use and reloads the page, losing the book that was just analyzed.
   optimizeDeps: { include: ['d3-cloud', 'fflate'] },
   worker: { format: 'es' },
+  // Lets any stylesheet write `@use 'media';` without a relative path (research R2).
+  css: {
+    preprocessorOptions: {
+      scss: { loadPaths: [fileURLToPath(new URL('./src/styles', import.meta.url))] },
+    },
+  },
   test: {
     coverage: {
       provider: 'v8',

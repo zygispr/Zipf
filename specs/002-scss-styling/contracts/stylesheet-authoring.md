@@ -150,7 +150,8 @@ Example, from `FileDropZone.module.scss` (abridged):
   imports. **(tested)**
 - A dynamic lookup (`styles[variant]`) is allowed only when it is listed in the dynamic-lookup
   table in `tests/contract/stylesheets.test.ts`, typed against the component's own union type, so
-  every value of the union has a class. **(tested)**
+  every value of the union is listed. A value marked `true` must be a class; one marked `false`
+  deliberately has none. **(tested)**
 
 Current dynamic lookups:
 
@@ -159,7 +160,7 @@ Current dynamic lookups:
 | Button        | `styles[variant]` | `ButtonVariant`          |
 | Text          | `styles[variant]` | `TextVariant`            |
 | Heading       | `styles[Tag]`     | Heading's level/tag prop |
-| ResultsLayout | `styles[slot]`    | its slot names           |
+| ResultsLayout | `styles[slot]`    | its slot names; only `heading` has a class |
 
 ## Formatting
 

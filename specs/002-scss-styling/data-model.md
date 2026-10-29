@@ -67,7 +67,7 @@ BarChart / WordCloud / ZipfChart.tsx ──imports──▶ chart.module.scss
 | Every class a component uses exists in its stylesheet, including dynamic lookups | FR-008     | `stylesheets.test.ts`              |
 | Width media queries only in `_media.scss`                                  | FR-004, SC-004   | `stylesheets.test.ts`              |
 | Element states, pseudo-elements, and overrides are nested under the element | FR-002, SC-003  | Review against the authoring contract |
-| At most three selector levels; no added specificity                        | FR-003           | Review; `test:visual`              |
+| At most three selector levels; no added specificity                        | FR-003           | T051 selector and depth comparison; `test:visual` |
 | Repeated patterns use shared mixins; one-off patterns stay inline          | FR-005           | Review                             |
 | Tokens are custom properties; dark mode still switches                     | FR-006           | `test:visual` (dark), a11y e2e     |
 | Identical rendering in every state                                         | FR-007, SC-002   | `test:visual`                      |

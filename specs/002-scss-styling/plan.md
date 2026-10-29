@@ -141,9 +141,10 @@ the research entries cited.
 1. **Tooling first**: add `sass`, the Vite load path, the `test:visual` script and the `@visual`
    exclusion from `test:e2e`, the git-ignore entry, and `tests/e2e/visual.spec.ts`. Capture
    baselines from the CSS version (R7).
-2. **Contract test**: add `tests/contract/stylesheets.test.ts` with its checks. While the code is
-   still CSS, the only-SCSS check is expected to fail; mark it `todo` until the last batch, then
-   enable it (R8).
+2. **Contract test**: add `tests/contract/stylesheets.test.ts` with the compile and class-name
+   checks, both of which pass on the CSS version. Write the only-SCSS check later, just before
+   the last batch is renamed. It fails only until that rename, so no committed test is ever red
+   or skipped (R8).
 3. **Shared partials**: add `_media.scss` and `_chart.scss` (R4, R5).
 4. **Convert in batches**: global and tokens, then atoms, molecules, organisms (with
    `chart.module.scss`), and templates. Each file is `git mv`'d, then restructured following the

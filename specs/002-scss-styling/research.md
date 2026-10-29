@@ -148,7 +148,10 @@ contract](./contracts/stylesheet-authoring.md) restates them for future authors:
 - **Context selectors nest under the element they style.** A rule such as
   `.zone[data-dragging='true'] .icon` styles the icon, so it is written inside `.icon` as
   `.zone[data-dragging='true'] & { … }`. That keeps everything that styles one element in that
-  element's block (SC-003).
+  element's block (SC-003). This applies when the styled element is a class with its own
+  top-level rule. When it is a bare tag, a pseudo-class, or a class with no rule of its own
+  (`.axis text`, `.error > :last-child`), nest it inside the ancestor instead (`.axis { text {
+  … } }`). The authoring contract spells out both cases.
 - **Override placement.** Because of behaviour 1, an override that used to sit at the end of the
   file now comes right after the rule it is nested in. Before moving one, check whether a later
   rule with equal specificity sets the same property on the same element. If one does, nest the

@@ -182,8 +182,9 @@ check passes.
   element in a single contiguous block; no element's selector is repeated as a separate top-level
   rule elsewhere in the same file.
 - **SC-004**: Each screen-width breakpoint value appears in exactly one place in the source.
-- **SC-005**: The total size of the shipped styles grows by no more than 2% compared with before
-  the conversion, and the initial JavaScript budget (150 KB gzipped) is still met.
+- **SC-005**: The total gzipped size of the shipped styles (the bytes a visitor downloads) grows
+  by no more than 2% compared with before the conversion, and the initial JavaScript budget
+  (150 KB gzipped) is still met.
 - **SC-006**: The app's existing performance budgets (page load, interaction response, layout
   shift, and frame budgets for animations) are all still met.
 - **SC-007**: All existing automated tests, including accessibility checks, pass without changes

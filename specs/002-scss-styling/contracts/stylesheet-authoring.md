@@ -70,6 +70,17 @@ Each top-level rule is one element (one class). Inside it, in this order:
 4. Descendants it owns, only where the old CSS used a descendant selector: `.axis { line { … } }`.
 5. Media overrides: `@include media.narrow { … }`, then `@include media.reduced-motion { … }`.
 
+**Which block a selector like `A B` goes in.** It depends on the element being styled, `B`:
+
+- `B` is a class that has its own top-level rule (as `.hit`, `.dot`, and `.icon` do). Nest the
+  selector inside `B` as a context rule, `A &`. For example, `.mark:hover .hit` becomes
+  `.mark:hover & { … }` inside `.hit`. Everything that styles `.hit` is then in one place.
+- `B` is a bare tag, a pseudo-class, or a class with no rule of its own (such as `line`, `text`,
+  `> :last-child`, or the `li` in `.legend li`). Nest it inside `A` as a descendant. For example,
+  `.axis text` becomes `text { … }` inside `.axis`.
+- `B` is in a selector list where both forms apply. Use the first rule, so that `B`'s own block
+  stays complete.
+
 Rules:
 
 - No declarations after a nested rule or `@include` that emits a rule.

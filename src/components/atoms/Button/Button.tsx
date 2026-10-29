@@ -1,6 +1,6 @@
 import { motion } from 'motion/react';
 import type { ComponentPropsWithRef, ReactNode } from 'react';
-import styles from './Button.module.css';
+import styles from './Button.module.scss';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost';
 

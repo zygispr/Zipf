@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useEffectEvent, type ReactNode } from 'react';
-import styles from './Tooltip.module.css';
+import styles from './Tooltip.module.scss';
 import { useReducedMotion } from '../../../hooks/useReducedMotion';
 
 export interface TooltipProps {

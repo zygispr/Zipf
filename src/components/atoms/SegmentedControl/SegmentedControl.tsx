@@ -1,6 +1,6 @@
 import { motion } from 'motion/react';
 import { useId, useRef, type KeyboardEvent, type ReactNode } from 'react';
-import styles from './SegmentedControl.module.css';
+import styles from './SegmentedControl.module.scss';
 
 export interface SegmentedOption<T extends string | number> {
   value: T;

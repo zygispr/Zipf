@@ -4,7 +4,7 @@ import { Icon } from '../../atoms/Icon';
 import { Text } from '../../atoms/Text';
 import { ERROR_MESSAGES } from '../../../lib/errorMessages';
 import type { AnalysisErrorCode } from '../../../lib/types';
-import styles from './ErrorMessage.module.css';
+import styles from './ErrorMessage.module.scss';
 
 export interface ErrorMessageProps {
   code: AnalysisErrorCode;

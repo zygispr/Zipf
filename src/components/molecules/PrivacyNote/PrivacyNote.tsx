@@ -1,6 +1,6 @@
 import { Icon } from '../../atoms/Icon';
 import { Text } from '../../atoms/Text';
-import styles from './PrivacyNote.module.css';
+import styles from './PrivacyNote.module.scss';
 
 /** The privacy guarantee, stated on the upload screen (FR-005). */
 export function PrivacyNote() {

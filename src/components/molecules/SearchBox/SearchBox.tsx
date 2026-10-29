@@ -6,7 +6,7 @@ import { createWordIndex, findWord } from '../../../lib/findWord';
 import { formatCount, formatPercent } from '../../../lib/selectView';
 import { normalizeWord } from '../../../lib/tokenize';
 import type { WordEntry } from '../../../lib/types';
-import styles from './SearchBox.module.css';
+import styles from './SearchBox.module.scss';
 
 export interface SearchBoxProps {
   /** The current view's entries, so ranks match the table and charts. */

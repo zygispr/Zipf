@@ -2,7 +2,7 @@ import { useId, useRef, useState, type DragEvent, type Ref } from 'react';
 import { Button } from '../../atoms/Button';
 import { Icon } from '../../atoms/Icon';
 import { Text } from '../../atoms/Text';
-import styles from './FileDropZone.module.css';
+import styles from './FileDropZone.module.scss';
 
 export interface FileDropZoneProps {
   onFile: (file: File) => void;

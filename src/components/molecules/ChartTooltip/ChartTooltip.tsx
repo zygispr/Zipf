@@ -2,7 +2,7 @@ import { Tooltip } from '../../atoms/Tooltip';
 import type { TooltipPosition } from '../../../hooks/useWordTooltip';
 import { formatCount, formatPercent } from '../../../lib/selectView';
 import type { WordEntry } from '../../../lib/types';
-import styles from './ChartTooltip.module.css';
+import styles from './ChartTooltip.module.scss';
 
 export interface ChartTooltipProps {
   id: string;

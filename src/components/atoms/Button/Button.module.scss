@@ -13,40 +13,41 @@
   transition:
     background-color var(--duration-fast) var(--ease-out),
     box-shadow var(--duration-fast) var(--ease-out);
-}
 
-.button:disabled {
-  opacity: 0.5;
+  &:disabled {
+    opacity: 0.5;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 }
 
 .primary {
   background: var(--color-primary);
   color: var(--color-on-primary);
   box-shadow: var(--shadow-sm);
-}
 
-.primary:hover:not(:disabled) {
-  box-shadow: var(--shadow-md);
+  &:hover:not(:disabled) {
+    box-shadow: var(--shadow-md);
+  }
 }
 
 .secondary {
   background: var(--color-surface);
   border-color: var(--color-primary);
   color: var(--color-primary);
-}
 
-.secondary:hover:not(:disabled),
-.ghost:hover:not(:disabled) {
-  background: var(--color-surface-muted);
+  &:hover:not(:disabled) {
+    background: var(--color-surface-muted);
+  }
 }
 
 .ghost {
   background: transparent;
   color: var(--color-primary);
-}
 
-@media (prefers-reduced-motion: reduce) {
-  .button {
-    transition: none;
+  &:hover:not(:disabled) {
+    background: var(--color-surface-muted);
   }
 }

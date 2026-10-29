@@ -139,26 +139,26 @@ from the start.
   - Update the imports in `src/main.tsx` (`./styles/global.scss`) and in `src/components/organisms/BarChart/BarChart.tsx`, `src/components/organisms/WordCloud/WordCloud.tsx`, and `src/components/organisms/ZipfChart/ZipfChart.tsx` (`../../../styles/chart.module.scss`).
 
   Run `npm run build`, `npm test`, and `npm run test:visual`, which must show zero diffs. Commit as a rename-only commit so `git log --follow` keeps history. `chart.module.scss` is flat and needs no restructuring.
-- [ ] T010 [P] [US1] Restructure `src/styles/global.scss`:
+- [X] T010 [P] [US1] Restructure `src/styles/global.scss`:
   - Nest the reduced-motion block (`@media (prefers-reduced-motion: reduce)` on `*, *::before, *::after`) inside the reset rule with the same selector, keeping its FR-017 comment above it.
   - Nest any other same-selector repeats per the rules above.
   - Keep `@use 'tokens';` first.
-- [ ] T011 [P] [US1] Restructure `src/styles/_tokens.scss`: move the `@media (prefers-color-scheme: dark)` block inside the `:root` rule as a nested `@media`. Every custom property and every contrast-ratio comment stays exactly as written. Tokens remain CSS custom properties, quoting the data model: "it stays a runtime custom property; there is no Sass variable mirror (FR-006)".
+- [X] T011 [P] [US1] Restructure `src/styles/_tokens.scss`: move the `@media (prefers-color-scheme: dark)` block inside the `:root` rule as a nested `@media`. Every custom property and every contrast-ratio comment stays exactly as written. Tokens remain CSS custom properties, quoting the data model: "it stays a runtime custom property; there is no Sass variable mirror (FR-006)".
 
 ### Batch B: atoms
 
-- [ ] T012 [US1] Rename with `git mv` and update each component's `import styles from './<Name>.module.scss'`, without editing styles: `Button`, `Heading`, `Icon`, `ProgressBar`, `SegmentedControl`, `Spinner`, `Text`, `TextInput`, `Toggle`, and `Tooltip`, each in `src/components/atoms/<Name>/<Name>.module.css` → `.module.scss` with `<Name>.tsx` updated. Run `npm run build`, `npm test`, and `npm run test:visual` (zero diffs), then commit as rename-only. `Icon`, `Text`, and `Tooltip` are flat and need no restructuring.
-- [ ] T013 [P] [US1] Restructure `src/components/atoms/Button/Button.module.scss`: nest the variant and state selectors under `.button`, and the reduced-motion block's rules under the elements they override.
-- [ ] T014 [P] [US1] Restructure `src/components/atoms/Heading/Heading.module.scss`: nest its one compound or descendant selector under the element it styles.
-- [ ] T015 [P] [US1] Restructure `src/components/atoms/ProgressBar/ProgressBar.module.scss`: move the reduced-motion overrides into the rules they override.
-- [ ] T016 [P] [US1] Restructure `src/components/atoms/SegmentedControl/SegmentedControl.module.scss`. Nest:
+- [X] T012 [US1] Rename with `git mv` and update each component's `import styles from './<Name>.module.scss'`, without editing styles: `Button`, `Heading`, `Icon`, `ProgressBar`, `SegmentedControl`, `Spinner`, `Text`, `TextInput`, `Toggle`, and `Tooltip`, each in `src/components/atoms/<Name>/<Name>.module.css` → `.module.scss` with `<Name>.tsx` updated. Run `npm run build`, `npm test`, and `npm run test:visual` (zero diffs), then commit as rename-only. `Icon`, `Text`, and `Tooltip` are flat and need no restructuring.
+- [X] T013 [P] [US1] Restructure `src/components/atoms/Button/Button.module.scss`: nest the variant and state selectors under `.button`, and the reduced-motion block's rules under the elements they override.
+- [X] T014 [P] [US1] Restructure `src/components/atoms/Heading/Heading.module.scss`: nest its one compound or descendant selector under the element it styles.
+- [X] T015 [P] [US1] Restructure `src/components/atoms/ProgressBar/ProgressBar.module.scss`: move the reduced-motion overrides into the rules they override.
+- [X] T016 [P] [US1] Restructure `src/components/atoms/SegmentedControl/SegmentedControl.module.scss`. Nest:
   - the state selectors under their elements;
   - the `@media (max-width: 480px)` overrides for `.group` and `.option` inside those rules, written as plain nested `@media (max-width: 480px)`, since US2 swaps them for the mixin;
   - the reduced-motion overrides inside their rules.
-- [ ] T017 [P] [US1] Restructure `src/components/atoms/Spinner/Spinner.module.scss`: nest the reduced-motion override inside the rule it overrides, and keep the `@keyframes` at the top level with its name unchanged.
-- [ ] T018 [P] [US1] Restructure `src/components/atoms/TextInput/TextInput.module.scss`: nest the focus, placeholder, and other state selectors and the reduced-motion overrides under their elements.
-- [ ] T019 [P] [US1] Restructure `src/components/atoms/Toggle/Toggle.module.scss`: nest its five compound or context selectors (checked and focus states of the track and thumb) and the reduced-motion overrides under the elements they style.
-- [ ] T020 [US1] Checkpoint for batch B (and T010–T011): `npm run test:visual` shows zero changed pixels, and `npm test` and `npm run format:check` pass (run `npm run format` first if needed). Commit.
+- [X] T017 [P] [US1] Restructure `src/components/atoms/Spinner/Spinner.module.scss`: nest the reduced-motion override inside the rule it overrides, and keep the `@keyframes` at the top level with its name unchanged.
+- [X] T018 [P] [US1] Restructure `src/components/atoms/TextInput/TextInput.module.scss`: nest the focus, placeholder, and other state selectors and the reduced-motion overrides under their elements.
+- [X] T019 [P] [US1] Restructure `src/components/atoms/Toggle/Toggle.module.scss`: nest its five compound or context selectors (checked and focus states of the track and thumb) and the reduced-motion overrides under the elements they style.
+- [X] T020 [US1] Checkpoint for batch B (and T010–T011): `npm run test:visual` shows zero changed pixels, and `npm test` and `npm run format:check` pass (run `npm run format` first if needed). Commit.
 
 ### Batch C: molecules
 

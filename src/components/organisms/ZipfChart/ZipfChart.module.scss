@@ -1,3 +1,5 @@
+@use 'chart';
+
 .axis {
   line {
     stroke: var(--color-border);
@@ -8,16 +10,12 @@
   }
 
   text {
-    fill: var(--color-text-muted);
-    font-size: 12px;
-    font-variant-numeric: tabular-nums;
+    @include chart.value-text;
   }
 }
 
 .axisLabel {
-  fill: var(--color-text);
-  font-size: 13px;
-  font-weight: 600;
+  @include chart.label-text;
 }
 
 .ideal {
@@ -28,16 +26,14 @@
 }
 
 .point {
-  cursor: pointer;
-  outline: none;
+  @include chart.mark;
 }
 
 .hit {
   fill: transparent;
 
   .point:focus-visible & {
-    stroke: var(--color-focus);
-    stroke-width: 2px;
+    @include chart.focus-ring;
   }
 }
 

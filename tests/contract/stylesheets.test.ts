@@ -76,6 +76,19 @@ describe('stylesheets', () => {
     expect(glob('src/**/*.css'), 'convert these to .scss').toEqual([]);
   });
 
+  it('breakpoints are named', () => {
+    const failures = glob('src/**/*.scss')
+      .filter((path) => path !== 'src/styles/_media.scss')
+      .flatMap((path) =>
+        readFileSync(join(ROOT, path), 'utf8')
+          .split('\n')
+          .flatMap((line, index) =>
+            /^\s*@media\b.*width/.test(line) ? [`${path}:${String(index + 1)}`] : [],
+          ),
+      );
+    expect(failures, 'use media.narrow or media.wide instead of a width').toEqual([]);
+  });
+
   it('every stylesheet compiles', async () => {
     const stylesheets = glob('src/**/*.{css,scss}');
     expect(stylesheets.length).toBeGreaterThan(0);

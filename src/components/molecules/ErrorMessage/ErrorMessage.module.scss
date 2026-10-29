@@ -1,3 +1,5 @@
+@use 'media';
+
 .error {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
@@ -14,7 +16,7 @@
     justify-self: start;
   }
 
-  @media (min-width: 640px) {
+  @include media.wide {
     grid-template-columns: auto minmax(0, 1fr) auto;
 
     > :last-child {

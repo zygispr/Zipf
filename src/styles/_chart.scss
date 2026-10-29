@@ -1,0 +1,28 @@
+/* Declarations the chart marks share (research R5): used by BarChart, WordCloud, and ZipfChart.
+   Build-time only; each mixin emits nothing until it is included. */
+
+/* A word's mark: clickable, with focus shown by the chart's own ring instead of an outline. */
+@mixin mark {
+  cursor: pointer;
+  outline: none;
+}
+
+/* The keyboard focus ring around a focused mark's hit area. */
+@mixin focus-ring {
+  stroke: var(--color-focus);
+  stroke-width: 2px;
+}
+
+/* A label naming a word or an axis. */
+@mixin label-text {
+  fill: var(--color-text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* A number: a count or an axis tick. */
+@mixin value-text {
+  fill: var(--color-text-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}

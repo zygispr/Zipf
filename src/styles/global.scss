@@ -1,4 +1,5 @@
 @use 'tokens';
+@use 'media';
 
 /* Modern reset */
 *,
@@ -9,7 +10,7 @@
   /* FR-017: no motion for people who ask for less. Transitions get a 0s duration, not a tiny one:
      with the default `transition-property: all`, any non-zero duration would start a transition on
      every element for every style change. */
-  @media (prefers-reduced-motion: reduce) {
+  @include media.reduced-motion {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0s !important;

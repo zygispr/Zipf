@@ -1,3 +1,5 @@
+@use 'media';
+
 .field {
   display: flex;
   flex-direction: column;
@@ -41,7 +43,7 @@
     border-color: var(--color-primary);
   }
 
-  @media (prefers-reduced-motion: reduce) {
+  @include media.reduced-motion {
     transition: none;
   }
 }

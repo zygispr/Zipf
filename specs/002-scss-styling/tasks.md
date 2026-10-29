@@ -219,11 +219,11 @@ file edited, and `grep -rn '480px\|640px' src --include='*.scss'` matches only `
 
 ### Test for User Story 2
 
-- [ ] T038 [US2] Add the "breakpoints are named" check to `tests/contract/stylesheets.test.ts`: in every `src/**/*.scss` except `src/styles/_media.scss`, no line that starts an `@media` may contain `width`. The failure message says to use `media.narrow` or `media.wide` (FR-004, SC-004). Run it and confirm it fails, naming `SegmentedControl.module.scss`, `ErrorMessage.module.scss`, `ResultsToolbar.module.scss`, `VisualizationPanel.module.scss`, and `WordTable.module.scss`.
+- [X] T038 [US2] Add the "breakpoints are named" check to `tests/contract/stylesheets.test.ts`: in every `src/**/*.scss` except `src/styles/_media.scss`, no line that starts an `@media` may contain `width`. The failure message says to use `media.narrow` or `media.wide` (FR-004, SC-004). Run it and confirm it fails, naming `SegmentedControl.module.scss`, `ErrorMessage.module.scss`, `ResultsToolbar.module.scss`, `VisualizationPanel.module.scss`, and `WordTable.module.scss`.
 
 ### Implementation for User Story 2
 
-- [ ] T039 [US2] Create `src/styles/_media.scss` with exactly these members (data model "Shared breakpoint"), each with a one-line comment:
+- [X] T039 [US2] Create `src/styles/_media.scss` with exactly these members (data model "Shared breakpoint"), each with a one-line comment:
   - `$narrow-max: 480px;`
   - `$wide-min: 640px;`
   - `@mixin narrow { @media (max-width: $narrow-max) { @content; } }`
@@ -231,22 +231,22 @@ file edited, and `grep -rn '480px\|640px' src --include='*.scss'` matches only `
   - `@mixin reduced-motion { @media (prefers-reduced-motion: reduce) { @content; } }`
 
   Open the file with a comment saying these are build-time only, because CSS custom properties can't be used in media queries, and that tokens stay in `_tokens.scss` (research R3, R4).
-- [ ] T040 [P] [US2] Create `src/styles/_chart.scss` with exactly these argument-free mixins (research R5), and open the file with a comment naming BarChart, WordCloud, and ZipfChart as its users:
+- [X] T040 [P] [US2] Create `src/styles/_chart.scss` with exactly these argument-free mixins (research R5), and open the file with a comment naming BarChart, WordCloud, and ZipfChart as its users:
   - `@mixin mark { cursor: pointer; outline: none; }`
   - `@mixin focus-ring { stroke: var(--color-focus); stroke-width: 2px; }`
   - `@mixin label-text { fill: var(--color-text); font-size: 13px; font-weight: 600; }`
   - `@mixin value-text { fill: var(--color-text-muted); font-size: 12px; font-variant-numeric: tabular-nums; }`
-- [ ] T041 [P] [US2] In the atoms, add `@use 'media';` at the top and replace each nested `@media (prefers-reduced-motion: reduce)` with `@include media.reduced-motion` and each `@media (max-width: 480px)` with `@include media.narrow`. Files: `src/components/atoms/Button/Button.module.scss`, `ProgressBar/ProgressBar.module.scss`, `SegmentedControl/SegmentedControl.module.scss`, `Spinner/Spinner.module.scss`, `TextInput/TextInput.module.scss`, and `Toggle/Toggle.module.scss`, all under `src/components/atoms/`. Depends on T039.
-- [ ] T042 [P] [US2] Do the same in `src/components/molecules/ErrorMessage/ErrorMessage.module.scss` (`@media (min-width: 640px)` → `@include media.wide`) and `src/components/molecules/FileDropZone/FileDropZone.module.scss` (reduced-motion), adding `@use 'media';`. Depends on T039.
-- [ ] T043 [P] [US2] Do the same (`@media (max-width: 480px)` → `@include media.narrow`, adding `@use 'media';`) in `src/components/organisms/ResultsToolbar/ResultsToolbar.module.scss`, `src/components/organisms/VisualizationPanel/VisualizationPanel.module.scss`, and `src/components/organisms/WordTable/WordTable.module.scss`. Depends on T039.
-- [ ] T044 [P] [US2] Do the same (reduced-motion) in `src/components/templates/AppLayout/AppLayout.module.scss` and `src/styles/global.scss`. In `global.scss`, put `@use 'media';` after `@use 'tokens';`. Depends on T039.
-- [ ] T045 [P] [US2] Add `@use 'chart';` and replace the repeated declarations with mixins:
+- [X] T041 [P] [US2] In the atoms, add `@use 'media';` at the top and replace each nested `@media (prefers-reduced-motion: reduce)` with `@include media.reduced-motion` and each `@media (max-width: 480px)` with `@include media.narrow`. Files: `src/components/atoms/Button/Button.module.scss`, `ProgressBar/ProgressBar.module.scss`, `SegmentedControl/SegmentedControl.module.scss`, `Spinner/Spinner.module.scss`, `TextInput/TextInput.module.scss`, and `Toggle/Toggle.module.scss`, all under `src/components/atoms/`. Depends on T039.
+- [X] T042 [P] [US2] Do the same in `src/components/molecules/ErrorMessage/ErrorMessage.module.scss` (`@media (min-width: 640px)` → `@include media.wide`) and `src/components/molecules/FileDropZone/FileDropZone.module.scss` (reduced-motion), adding `@use 'media';`. Depends on T039.
+- [X] T043 [P] [US2] Do the same (`@media (max-width: 480px)` → `@include media.narrow`, adding `@use 'media';`) in `src/components/organisms/ResultsToolbar/ResultsToolbar.module.scss`, `src/components/organisms/VisualizationPanel/VisualizationPanel.module.scss`, and `src/components/organisms/WordTable/WordTable.module.scss`. Depends on T039.
+- [X] T044 [P] [US2] Do the same (reduced-motion) in `src/components/templates/AppLayout/AppLayout.module.scss` and `src/styles/global.scss`. In `global.scss`, put `@use 'media';` after `@use 'tokens';`. Depends on T039.
+- [X] T045 [P] [US2] Add `@use 'chart';` and replace the repeated declarations with mixins:
   - `src/components/organisms/BarChart/BarChart.module.scss`: `.mark` → `@include chart.mark;`, the focused `.hit` → `@include chart.focus-ring;`, `.label` → `@include chart.label-text;`, `.value` → `@include chart.value-text;`
   - `src/components/organisms/WordCloud/WordCloud.module.scss`: `.word` → `@include chart.mark;` only. Its 3px `paint-order` focus style stays inline.
   - `src/components/organisms/ZipfChart/ZipfChart.module.scss`: `.point` → `chart.mark`, the focused `.hit` → `chart.focus-ring`, `.axisLabel` → `chart.label-text`, `.axis text` → `chart.value-text`.
 
   Leave `ResultsToolbar .topN` and `ZipfChart .legend li` inline; they match by coincidence, not purpose (research R5). Each `@include` goes where the declarations were, before any nested rule. Depends on T040.
-- [ ] T046 [US2] Checkpoint:
+- [X] T046 [US2] Checkpoint:
   - The T038 check passes.
   - `grep -rn '480px\|640px' src --include='*.scss'` matches only `src/styles/_media.scss`.
   - Do the quickstart §4 breakpoint exercise, then revert it.

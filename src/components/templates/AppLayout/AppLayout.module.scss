@@ -1,3 +1,5 @@
+@use 'media';
+
 .layout {
   position: relative;
   isolation: isolate;
@@ -24,7 +26,7 @@
     background-size: 300% 300%;
     animation: gradient-shift var(--duration-gradient) var(--ease-in-out) infinite alternate;
 
-    @media (prefers-reduced-motion: reduce) {
+    @include media.reduced-motion {
       animation: none;
     }
   }

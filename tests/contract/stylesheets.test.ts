@@ -136,4 +136,12 @@ describe('stylesheets', () => {
 
     expect([...new Set(failures)]).toEqual([]);
   });
+
+  it('a compile error names the problem and its line', async () => {
+    const source = "@use 'media';\n.probe {\n  @include media.tiny {\n    color: blue;\n  }\n}\n";
+    const path = join(ROOT, 'src/components/atoms/Probe/Probe.module.scss');
+    await expect(preprocessCSS(source, path, config)).rejects.toThrow(
+      /Undefined mixin[\s\S]*Probe\.module\.scss 3:\d+/,
+    );
+  });
 });

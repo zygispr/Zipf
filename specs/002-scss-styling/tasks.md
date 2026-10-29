@@ -269,16 +269,16 @@ makes `npm run build` fail and shows an error overlay in `npm run dev`.
 
 ### Test for User Story 3
 
-- [ ] T047 [US3] In `tests/contract/stylesheets.test.ts`, add a test that calls `preprocessCSS` with the resolved config, an in-memory source of `@use 'media';\n.probe {\n  @include media.tiny {\n    color: blue;\n  }\n}\n`, and the filename `src/components/atoms/Probe/Probe.module.scss` (it doesn't need to exist). Assert that it rejects with a message containing `Undefined mixin` and line `3` (FR-011).
+- [X] T047 [US3] In `tests/contract/stylesheets.test.ts`, add a test that calls `preprocessCSS` with the resolved config, an in-memory source of `@use 'media';\n.probe {\n  @include media.tiny {\n    color: blue;\n  }\n}\n`, and the filename `src/components/atoms/Probe/Probe.module.scss` (it doesn't need to exist). Assert that it rejects with a message containing `Undefined mixin` and line `3` (FR-011).
 
 ### Implementation for User Story 3
 
-- [ ] T048 [US3] Run quickstart §5 by hand:
+- [X] T048 [US3] Run quickstart §5 by hand:
   - Create `src/components/atoms/Probe/Probe.module.scss` with the snippet given there.
   - Confirm that `npm run format:check` flags it, that the contract test reports `Undefined mixin` with file and line, and that `npm run build` fails naming the file and line.
   - Import it from a component under `npm run dev` and confirm the browser error overlay names the file.
   - Delete the probe and its import. No commit; this task is verification only.
-- [ ] T049 [P] [US3] In `README.md`:
+- [X] T049 [P] [US3] In `README.md`:
   - Add a "Styles" section after "Project structure" covering:
     - (a) component stylesheets are SCSS Modules next to each component (`<Name>.module.scss`);
     - (b) `src/styles/` holds `global.scss`, `_tokens.scss`, and `chart.module.scss`, plus the build-time partials `_media.scss` (`media.narrow`, `media.wide`, `media.reduced-motion`) and `_chart.scss` (`chart.mark`, `chart.focus-ring`, `chart.label-text`, `chart.value-text`);

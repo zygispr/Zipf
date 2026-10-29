@@ -1,4 +1,4 @@
-import styles from './Spinner.module.css';
+import styles from './Spinner.module.scss';
 
 export interface SpinnerProps {
   /** Announced to screen readers; not shown. */

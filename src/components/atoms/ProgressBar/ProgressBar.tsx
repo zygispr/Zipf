@@ -1,4 +1,4 @@
-import styles from './ProgressBar.module.css';
+import styles from './ProgressBar.module.scss';
 
 export interface ProgressBarProps {
   /** Progress from 0 to 1; out-of-range values are clamped. */

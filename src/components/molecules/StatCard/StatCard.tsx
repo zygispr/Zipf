@@ -2,7 +2,7 @@ import { animate, motion, useMotionValue, useTransform } from 'motion/react';
 import { useEffect, useId } from 'react';
 import { Text } from '../../atoms/Text';
 import { formatCount } from '../../../lib/selectView';
-import styles from './StatCard.module.css';
+import styles from './StatCard.module.scss';
 import { useReducedMotion } from '../../../hooks/useReducedMotion';
 
 export type StatTone = 'primary' | 'secondary' | 'accent';

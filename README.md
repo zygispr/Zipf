@@ -76,9 +76,9 @@ src/
 ├── hooks/          # useAnalysis (worker + state machine), useViewSettings, …
 ├── lib/            # pure logic: tokenizing, counting, EPUB reading, CSV, search
 ├── worker/         # the analysis Web Worker and its message protocol
-└── styles/         # design tokens and global CSS
+└── styles/         # design tokens, global styles, shared SCSS partials
 tests/
-├── contract/       # worker message protocol
+├── contract/       # worker message protocol, stylesheets
 ├── e2e/            # Playwright suites
 ├── perf/           # benchmark
 └── fixtures/       # books with hand-verified counts, broken and DRM EPUBs, …
@@ -86,6 +86,29 @@ tests/
 
 Components below `pages/` get data only through props, with no Context or global store. Pure
 logic lives in `src/lib/`, with a test next to each module.
+
+## Styles
+
+Styles are SCSS, compiled to plain CSS at build time.
+
+- Each component's styles are an SCSS Module next to it, `<Name>.module.scss`, imported as
+  `styles`.
+- `src/styles/` holds the global stylesheet `global.scss`, the design tokens `_tokens.scss`, and
+  `chart.module.scss` (classes the three charts share). It also holds two build-time partials:
+  - `_media.scss`: `media.narrow` (up to 480 px), `media.wide` (from 640 px), and
+    `media.reduced-motion`. Never write a width in a media query; the contract test rejects it.
+  - `_chart.scss`: `chart.mark`, `chart.focus-ring`, `chart.label-text`, and `chart.value-text`,
+    used by BarChart, WordCloud, and ZipfChart.
+- `src/styles` is on the Sass load path, so any stylesheet can write `@use 'media';` and then
+  `@include media.narrow { … }`, with no relative path.
+- Design tokens (`--color-primary`, `--space-3`, …) stay CSS custom properties, because dark mode
+  switches them while the page runs. Never turn them into Sass variables.
+- Each element's states, pseudo-elements, and media overrides are nested in its own block. The
+  full rules are in the
+  [stylesheet authoring contract](specs/002-scss-styling/contracts/stylesheet-authoring.md).
+- For any change that should not change how the app looks, compare screenshots before and after:
+  capture baselines on the unchanged code with `npm run test:visual -- --update-snapshots`, make
+  the change, then run `npm run test:visual`. Baselines are local and git-ignored.
 
 ## Deployment
 
@@ -97,4 +120,5 @@ the `BASE_PATH` environment variable (`/` by default). In the repository setting
 ## Design documents
 
 The specification, plan, research decisions, data model, contracts, and task list are in
-[specs/001-book-word-frequency/](specs/001-book-word-frequency/).
+[specs/001-book-word-frequency/](specs/001-book-word-frequency/). The SCSS conversion has its own
+in [specs/002-scss-styling/](specs/002-scss-styling/).

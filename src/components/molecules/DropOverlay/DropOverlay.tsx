@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'motion/react';
 import { Icon } from '../../atoms/Icon';
 import { Text } from '../../atoms/Text';
-import styles from './DropOverlay.module.css';
+import styles from './DropOverlay.module.scss';
 
 export interface DropOverlayProps {
   visible: boolean;

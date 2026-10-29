@@ -1,0 +1,29 @@
+/* Named media queries (research R4). Build-time only: CSS custom properties can't be used in a
+   media query, so breakpoints are Sass variables. Design tokens stay in _tokens.scss. */
+
+/* Phones: the widest viewport that gets the compact layout. */
+$narrow-max: 480px;
+
+/* Tablets and up: the narrowest viewport that gets the wide layout. */
+$wide-min: 640px;
+
+/* Styles for viewports up to $narrow-max. */
+@mixin narrow {
+  @media (max-width: $narrow-max) {
+    @content;
+  }
+}
+
+/* Styles for viewports from $wide-min. */
+@mixin wide {
+  @media (min-width: $wide-min) {
+    @content;
+  }
+}
+
+/* Styles for people who ask for less motion (FR-017). */
+@mixin reduced-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+}

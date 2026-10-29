@@ -1,3 +1,5 @@
+@use 'media';
+
 .layout {
   position: relative;
   isolation: isolate;
@@ -6,24 +8,28 @@
   min-height: 100dvh;
   padding-inline: var(--page-gutter);
   overflow-x: clip;
-}
 
-/* Animated multi-color background; fixed so it never adds scroll height. */
-.layout::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background: linear-gradient(
-    120deg,
-    var(--gradient-1),
-    var(--gradient-2),
-    var(--gradient-3),
-    var(--gradient-4),
-    var(--gradient-1)
-  );
-  background-size: 300% 300%;
-  animation: gradient-shift var(--duration-gradient) var(--ease-in-out) infinite alternate;
+  /* Animated multi-color background; fixed so it never adds scroll height. */
+  &::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(
+      120deg,
+      var(--gradient-1),
+      var(--gradient-2),
+      var(--gradient-3),
+      var(--gradient-4),
+      var(--gradient-1)
+    );
+    background-size: 300% 300%;
+    animation: gradient-shift var(--duration-gradient) var(--ease-in-out) infinite alternate;
+
+    @include media.reduced-motion {
+      animation: none;
+    }
+  }
 }
 
 @keyframes gradient-shift {
@@ -70,10 +76,4 @@
 .footer {
   padding-block: var(--space-5);
   text-align: center;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .layout::before {
-    animation: none;
-  }
 }

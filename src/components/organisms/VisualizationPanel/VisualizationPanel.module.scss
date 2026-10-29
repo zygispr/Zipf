@@ -1,3 +1,5 @@
+@use 'media';
+
 .panel {
   /* Reserves space so switching charts doesn't shift the page (CLS < 0.1). */
   min-height: 28rem;
@@ -10,16 +12,14 @@
     color-mix(in srgb, var(--chart-1) 6%, transparent),
     color-mix(in srgb, var(--chart-3) 6%, transparent)
   );
+
+  @include media.narrow {
+    padding: var(--space-3);
+  }
 }
 
 .view {
   display: grid;
   gap: var(--space-4);
   will-change: opacity;
-}
-
-@media (max-width: 480px) {
-  .panel {
-    padding: var(--space-3);
-  }
 }

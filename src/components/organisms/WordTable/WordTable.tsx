@@ -3,7 +3,7 @@ import { memo, useState } from 'react';
 import { Pagination } from '../../molecules/Pagination';
 import { formatCount, formatPercent } from '../../../lib/selectView';
 import type { WordEntry } from '../../../lib/types';
-import styles from './WordTable.module.css';
+import styles from './WordTable.module.scss';
 import { useReducedMotion } from '../../../hooks/useReducedMotion';
 
 /** Rows per page (research R12): keeps the DOM small for 50k-word vocabularies. */

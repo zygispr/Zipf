@@ -1,0 +1,25 @@
+@use 'chart';
+
+.mark {
+  @include chart.mark;
+}
+
+.hit {
+  fill: transparent;
+
+  .mark:hover & {
+    fill: var(--color-surface-muted);
+  }
+
+  .mark:focus-visible & {
+    @include chart.focus-ring;
+  }
+}
+
+.label {
+  @include chart.label-text;
+}
+
+.value {
+  @include chart.value-text;
+}

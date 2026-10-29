@@ -6,8 +6,8 @@ import { useElementWidth } from '../../../hooks/useElementWidth';
 import { useWordTooltip } from '../../../hooks/useWordTooltip';
 import { formatCount, type ZipfPoint } from '../../../lib/selectView';
 import type { WordEntry } from '../../../lib/types';
-import chartStyles from '../../../styles/chart.module.css';
-import styles from './ZipfChart.module.css';
+import chartStyles from '../../../styles/chart.module.scss';
+import styles from './ZipfChart.module.scss';
 import { useReducedMotion } from '../../../hooks/useReducedMotion';
 
 const HEIGHT = 380;

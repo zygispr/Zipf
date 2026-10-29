@@ -1,3 +1,5 @@
+@use 'media';
+
 .field {
   display: flex;
   flex-direction: column;
@@ -31,19 +33,17 @@
   border-radius: var(--radius-pill);
   background: var(--color-surface);
   transition: border-color var(--duration-fast) var(--ease-out);
-}
 
-.input[data-has-icon] {
-  padding-left: calc(var(--space-3) + 20px + var(--space-2));
-}
+  &[data-has-icon] {
+    padding-left: calc(var(--space-3) + 20px + var(--space-2));
+  }
 
-.input:hover,
-.input:focus {
-  border-color: var(--color-primary);
-}
+  &:hover,
+  &:focus {
+    border-color: var(--color-primary);
+  }
 
-@media (prefers-reduced-motion: reduce) {
-  .input {
+  @include media.reduced-motion {
     transition: none;
   }
 }

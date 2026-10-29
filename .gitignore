@@ -23,4 +23,6 @@ dist/
 coverage/
 playwright-report/
 test-results/
+# Visual baselines are machine-specific screenshots; never commit them (research R7).
+tests/e2e/*-snapshots/
 *.tsbuildinfo

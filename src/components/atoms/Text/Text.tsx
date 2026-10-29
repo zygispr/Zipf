@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import styles from './Text.module.css';
+import styles from './Text.module.scss';
 
 export type TextVariant = 'body' | 'caption' | 'lead';
 

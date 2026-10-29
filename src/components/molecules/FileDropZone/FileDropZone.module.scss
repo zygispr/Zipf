@@ -1,3 +1,5 @@
+@use 'media';
+
 .zone {
   position: relative;
   display: grid;
@@ -13,16 +15,24 @@
     border-color var(--duration-base) var(--ease-out),
     background-color var(--duration-base) var(--ease-out),
     transform var(--duration-base) var(--ease-out);
-}
 
-.zone:hover,
-.zone[data-dragging='true'] {
-  border-color: var(--color-primary);
-}
+  &:hover,
+  &[data-dragging='true'] {
+    border-color: var(--color-primary);
+  }
 
-.zone[data-dragging='true'] {
-  background: var(--color-surface-muted);
-  transform: scale(1.02);
+  &[data-dragging='true'] {
+    background: var(--color-surface-muted);
+    transform: scale(1.02);
+
+    @include media.reduced-motion {
+      transform: none;
+    }
+  }
+
+  @include media.reduced-motion {
+    transition: none;
+  }
 }
 
 .icon {
@@ -38,28 +48,40 @@
   /* Idle: the icon bobs gently, inviting a drop (FR-016). Transform and opacity only, so the
      compositor runs it without layout or paint. */
   animation: icon-float 3.2s var(--ease-in-out) infinite;
-}
 
-/* A soft ring that keeps pulsing outward from behind the icon. The icon's animation makes it a
-   stacking context, so z-index -1 keeps the ring above its background but below the glyph. */
-.icon::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  border-radius: inherit;
-  background: inherit;
-  opacity: 0;
-  animation: icon-ring 3.2s var(--ease-out) infinite;
-}
+  /* A soft ring that keeps pulsing outward from behind the icon. The icon's animation makes it a
+     stacking context, so z-index -1 keeps the ring above its background but below the glyph. */
+  &::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    border-radius: inherit;
+    background: inherit;
+    opacity: 0;
+    animation: icon-ring 3.2s var(--ease-out) infinite;
 
-.zone:hover .icon {
-  animation-duration: 1.6s;
-}
+    @include media.reduced-motion {
+      animation: none;
+    }
+  }
 
-/* A file is over the zone: the icon hops, as if reaching for it. */
-.zone[data-dragging='true'] .icon {
-  animation: icon-hop 0.7s var(--ease-in-out) infinite;
+  .zone:hover & {
+    animation-duration: 1.6s;
+  }
+
+  /* A file is over the zone: the icon hops, as if reaching for it. */
+  .zone[data-dragging='true'] & {
+    animation: icon-hop 0.7s var(--ease-in-out) infinite;
+
+    @include media.reduced-motion {
+      animation: none;
+    }
+  }
+
+  @include media.reduced-motion {
+    animation: none;
+  }
 }
 
 @keyframes icon-float {
@@ -103,28 +125,12 @@
 
 .choose {
   margin-top: var(--space-2);
-}
 
-/* Stretch the button's click target over the whole zone. */
-.choose::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: var(--radius-lg);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .zone {
-    transition: none;
-  }
-
-  .icon,
-  .icon::before,
-  .zone[data-dragging='true'] .icon {
-    animation: none;
-  }
-
-  .zone[data-dragging='true'] {
-    transform: none;
+  /* Stretch the button's click target over the whole zone. */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-lg);
   }
 }

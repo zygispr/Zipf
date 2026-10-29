@@ -1,7 +1,7 @@
 import { Button } from '../../atoms/Button';
 import { Icon } from '../../atoms/Icon';
 import { Text } from '../../atoms/Text';
-import styles from './Pagination.module.css';
+import styles from './Pagination.module.scss';
 
 export interface PaginationProps {
   /** 1-based. */

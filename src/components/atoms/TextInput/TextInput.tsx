@@ -1,5 +1,5 @@
 import { useId, type ComponentPropsWithRef, type ReactNode } from 'react';
-import styles from './TextInput.module.css';
+import styles from './TextInput.module.scss';
 
 export type TextInputProps = ComponentPropsWithRef<'input'> & {
   label: string;

@@ -1,5 +1,5 @@
 import { useId, type ReactNode } from 'react';
-import styles from './Toggle.module.css';
+import styles from './Toggle.module.scss';
 
 export interface ToggleProps {
   label: string;

@@ -1,4 +1,4 @@
-import styles from './Icon.module.css';
+import styles from './Icon.module.scss';
 
 // 24×24 stroke icons, drawn with currentColor so they follow the surrounding text color.
 const ICON_PATHS = {

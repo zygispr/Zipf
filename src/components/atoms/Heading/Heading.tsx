@@ -1,5 +1,5 @@
 import type { ReactNode, Ref } from 'react';
-import styles from './Heading.module.css';
+import styles from './Heading.module.scss';
 
 const TAGS = { 1: 'h1', 2: 'h2', 3: 'h3' } as const;
 

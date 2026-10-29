@@ -1,7 +1,7 @@
 import { Text } from '../../atoms/Text';
 import { StatCard } from '../../molecules/StatCard';
 import { formatCount } from '../../../lib/selectView';
-import styles from './SummaryStats.module.css';
+import styles from './SummaryStats.module.scss';
 
 export interface SummaryStatsProps {
   totalWords: number;

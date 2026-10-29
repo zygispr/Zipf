@@ -1,21 +1,21 @@
-.axis line {
-  stroke: var(--color-border);
-}
+@use 'chart';
 
-.axis .grid {
-  stroke: var(--color-surface-muted);
-}
+.axis {
+  line {
+    stroke: var(--color-border);
+  }
 
-.axis text {
-  fill: var(--color-text-muted);
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
+  .grid {
+    stroke: var(--color-surface-muted);
+  }
+
+  text {
+    @include chart.value-text;
+  }
 }
 
 .axisLabel {
-  fill: var(--color-text);
-  font-size: 13px;
-  font-weight: 600;
+  @include chart.label-text;
 }
 
 .ideal {
@@ -26,26 +26,24 @@
 }
 
 .point {
-  cursor: pointer;
-  outline: none;
+  @include chart.mark;
 }
 
 .hit {
   fill: transparent;
+
+  .point:focus-visible & {
+    @include chart.focus-ring;
+  }
 }
 
 .dot {
   fill: var(--chart-1);
-}
 
-.point:hover .dot,
-.point:focus-visible .dot {
-  r: 7px;
-}
-
-.point:focus-visible .hit {
-  stroke: var(--color-focus);
-  stroke-width: 2px;
+  .point:hover &,
+  .point:focus-visible & {
+    r: 7px;
+  }
 }
 
 .legend {
@@ -59,12 +57,12 @@
   font-size: var(--font-size-caption);
   font-weight: 600;
   list-style: none;
-}
 
-.legend li {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
 }
 
 .swatchPoint {

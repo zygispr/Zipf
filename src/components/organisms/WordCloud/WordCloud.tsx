@@ -10,7 +10,7 @@ import { chartColor } from '../../../lib/chartColors';
 import { formatCount } from '../../../lib/selectView';
 import type { WordEntry } from '../../../lib/types';
 import { WORD_CLOUD_FONT_FAMILY, WORD_CLOUD_FONT_WEIGHT } from '../../../lib/wordCloudLayout';
-import chartStyles from '../../../styles/chart.module.css';
+import chartStyles from '../../../styles/chart.module.scss';
 import styles from './WordCloud.module.css';
 import { useReducedMotion } from '../../../hooks/useReducedMotion';
 

@@ -129,7 +129,7 @@ from the start.
 
 ### Batch A: global styles, tokens, shared chart module
 
-- [ ] T009 [US1] Rename with `git mv`, without editing styles:
+- [X] T009 [US1] Rename with `git mv`, without editing styles:
   - `src/styles/tokens.css` → `src/styles/_tokens.scss`
   - `src/styles/global.css` → `src/styles/global.scss`
   - `src/styles/chart.module.css` → `src/styles/chart.module.scss`

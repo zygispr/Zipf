@@ -7,7 +7,7 @@ import { useWordTooltip } from '../../../hooks/useWordTooltip';
 import { chartColor } from '../../../lib/chartColors';
 import { formatCount } from '../../../lib/selectView';
 import type { WordEntry } from '../../../lib/types';
-import chartStyles from '../../../styles/chart.module.css';
+import chartStyles from '../../../styles/chart.module.scss';
 import styles from './BarChart.module.css';
 import { useReducedMotion } from '../../../hooks/useReducedMotion';
 

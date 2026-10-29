@@ -297,8 +297,8 @@ makes `npm run build` fail and shows an error overlay in `npm run dev`.
 
 **Purpose**: Final checks against the spec's success criteria and the authoring contract.
 
-- [ ] T050 Check comment preservation (FR-009). For each of the 32 converted files, compare the multiset of `/* … */` comments in `git show main:<old .css path>` with the new `.scss` file, ignoring whitespace. They must be identical. Use a throwaway script in the scratchpad; don't commit it.
-- [ ] T051 [P] Check FR-003 by measurement, then review against the authoring contract. Use throwaway scripts in the scratchpad; don't commit them.
+- [X] T050 Check comment preservation (FR-009). For each of the 32 converted files, compare the multiset of `/* … */` comments in `git show main:<old .css path>` with the new `.scss` file, ignoring whitespace. They must be identical. Use a throwaway script in the scratchpad; don't commit it.
+- [X] T051 [P] Check FR-003 by measurement, then review against the authoring contract. Use throwaway scripts in the scratchpad; don't commit them.
   - **Same selectors, so same specificity (FR-003)**: compile each converted file with `npx sass --no-source-map --load-path=src/styles <file>`. Read the CSS it replaced with `git show main:<old .css path>`. For `global.scss`, add `main`'s `tokens.css` to its `global.css`, since `@use 'tokens'` inlines it.
     - From both outputs, build the multiset of `(enclosing @media query, single selector, property: value)` triples. Split selector lists on top-level commas, collapse whitespace, and drop quotes around attribute values (Sass writes `[data-dragging='true']` as `[data-dragging=true]`).
     - The two multisets must be identical. Then no selector was added, dropped, or changed, so no specificity changed. Rule order is not compared here; that is what `test:visual` is for.
@@ -312,14 +312,14 @@ makes `npm run build` fail and shows an error overlay in `npm run dev`.
   - every `@use` uses the default namespace (no `as *`).
 
   After any fix, rerun `npm run test:visual` (zero diffs).
-- [ ] T052 Measure budgets (quickstart §6, SC-005, SC-006):
+- [X] T052 Measure budgets (quickstart §6, SC-005, SC-006):
   - `npm run build && npm run size`: initial JS at most 150 KB gzipped (was 149.3 KB).
   - `for f in dist/assets/*.css; do gzip -9c "$f" | wc -c; done`: at most 5,086 bytes (was 4,987).
   - `npm run test:e2e:perf` and `npm run bench` pass.
 
   Record the before and after numbers for the PR description.
-- [ ] T053 Run the full gate (quickstart §7, SC-007): `npm run check && npm run test:coverage && npm run build && npm run test:e2e`. Confirm with `git diff main --stat -- tests/e2e src/**/*.test.tsx` that no existing test's assertions changed. The only expected test changes are the new `tests/e2e/visual.spec.ts` and `tests/contract/stylesheets.test.ts`.
-- [ ] T054 Run all of `specs/002-scss-styling/quickstart.md`, including §8: find `media.narrow` and `chart.focus-ring` using only the README. Collect any style bugs noted during conversion (rule 7 above) and the T052 numbers for the PR description.
+- [X] T053 Run the full gate (quickstart §7, SC-007): `npm run check && npm run test:coverage && npm run build && npm run test:e2e`. Confirm with `git diff main --stat -- tests/e2e src/**/*.test.tsx` that no existing test's assertions changed. The only expected test changes are the new `tests/e2e/visual.spec.ts` and `tests/contract/stylesheets.test.ts`.
+- [X] T054 Run all of `specs/002-scss-styling/quickstart.md`, including §8: find `media.narrow` and `chart.focus-ring` using only the README. Collect any style bugs noted during conversion (rule 7 above) and the T052 numbers for the PR description.
 
 ---
 

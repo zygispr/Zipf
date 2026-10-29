@@ -163,15 +163,15 @@ from the start.
 ### Batch C: molecules
 
 - [X] T021 [US1] Rename with `git mv` and update each `<Name>.tsx` import, without editing styles: `ChartTooltip`, `DropOverlay`, `ErrorMessage`, `FileDropZone`, `Pagination`, `PrivacyNote`, `SearchBox`, and `StatCard`, each in `src/components/molecules/<Name>/`. Build, test, and run the visual suite (zero diffs), then commit as rename-only. `ChartTooltip`, `DropOverlay`, `Pagination`, `PrivacyNote`, and `SearchBox` are flat.
-- [ ] T022 [P] [US1] Restructure `src/components/molecules/ErrorMessage/ErrorMessage.module.scss`: nest the `@media (min-width: 640px)` overrides of `.error` and `.error > :last-child` inside `.error`. Write them as plain nested `@media (min-width: 640px)`, with `> :last-child` nested as a child rule.
-- [ ] T023 [P] [US1] Restructure `src/components/molecules/FileDropZone/FileDropZone.module.scss` to match the example in `specs/002-scss-styling/contracts/stylesheet-authoring.md`, using plain nested `@media (prefers-reduced-motion: reduce)` instead of the mixin:
+- [X] T022 [P] [US1] Restructure `src/components/molecules/ErrorMessage/ErrorMessage.module.scss`: nest the `@media (min-width: 640px)` overrides of `.error` and `.error > :last-child` inside `.error`. Write them as plain nested `@media (min-width: 640px)`, with `> :last-child` nested as a child rule.
+- [X] T023 [P] [US1] Restructure `src/components/molecules/FileDropZone/FileDropZone.module.scss` to match the example in `specs/002-scss-styling/contracts/stylesheet-authoring.md`, using plain nested `@media (prefers-reduced-motion: reduce)` instead of the mixin:
   - Under `.zone`: `&:hover, &[data-dragging='true']`, `&[data-dragging='true']` (with its `transform: none` reduced-motion override), and the `transition: none` override.
   - Under `.icon`: `&::before`, `.zone:hover &`, and `.zone[data-dragging='true'] &` (with its `animation: none` override), plus the `.icon` and `.icon::before` `animation: none` overrides.
   - Under `.choose`: `&::after`.
 
   Keep all three `@keyframes` at the top level and every comment (FR-016 and the stacking-context note) in place.
-- [ ] T024 [P] [US1] Restructure `src/components/molecules/StatCard/StatCard.module.scss`: nest its three compound or descendant selectors under the elements they style.
-- [ ] T025 [US1] Checkpoint for batch C: zero visual diffs, `npm test`, `npm run format:check`. Commit.
+- [X] T024 [P] [US1] Restructure `src/components/molecules/StatCard/StatCard.module.scss`: nest its three compound or descendant selectors under the elements they style.
+- [X] T025 [US1] Checkpoint for batch C: zero visual diffs, `npm test`, `npm run format:check`. Commit.
 
 ### Batch D: organisms
 

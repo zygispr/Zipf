@@ -7,18 +7,18 @@
   border-radius: var(--radius-md);
   background: var(--color-surface);
   box-shadow: var(--shadow-md);
-}
 
-.card[data-tone='primary'] {
-  --tone: var(--chart-1);
-}
+  &[data-tone='primary'] {
+    --tone: var(--chart-1);
+  }
 
-.card[data-tone='secondary'] {
-  --tone: var(--chart-2);
-}
+  &[data-tone='secondary'] {
+    --tone: var(--chart-2);
+  }
 
-.card[data-tone='accent'] {
-  --tone: var(--chart-3);
+  &[data-tone='accent'] {
+    --tone: var(--chart-3);
+  }
 }
 
 .label {

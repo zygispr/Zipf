@@ -8,6 +8,19 @@
   border-radius: var(--radius-md);
   background: var(--color-surface);
   box-shadow: var(--shadow-sm);
+
+  > :last-child {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  @media (min-width: 640px) {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+
+    > :last-child {
+      grid-column: auto;
+    }
+  }
 }
 
 .icon {
@@ -17,19 +30,4 @@
 
 .message {
   font-weight: 600;
-}
-
-.error > :last-child {
-  grid-column: 1 / -1;
-  justify-self: start;
-}
-
-@media (min-width: 640px) {
-  .error {
-    grid-template-columns: auto minmax(0, 1fr) auto;
-  }
-
-  .error > :last-child {
-    grid-column: auto;
-  }
 }

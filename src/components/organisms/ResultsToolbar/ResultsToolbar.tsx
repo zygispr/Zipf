@@ -3,7 +3,7 @@ import { Icon } from '../../atoms/Icon';
 import { SegmentedControl } from '../../atoms/SegmentedControl';
 import { Toggle } from '../../atoms/Toggle';
 import type { TopN, VisualizationType } from '../../../lib/types';
-import styles from './ResultsToolbar.module.css';
+import styles from './ResultsToolbar.module.scss';
 
 const VISUALIZATION_OPTIONS = [
   { value: 'bar', label: 'Bar chart', icon: <Icon name="chart-bar" /> },

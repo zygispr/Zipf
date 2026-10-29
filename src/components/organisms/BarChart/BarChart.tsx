@@ -8,7 +8,7 @@ import { chartColor } from '../../../lib/chartColors';
 import { formatCount } from '../../../lib/selectView';
 import type { WordEntry } from '../../../lib/types';
 import chartStyles from '../../../styles/chart.module.scss';
-import styles from './BarChart.module.css';
+import styles from './BarChart.module.scss';
 import { useReducedMotion } from '../../../hooks/useReducedMotion';
 
 /** Each row is the bar's hit area, so it is at least 24 px tall (WCAG 2.2 target size). */

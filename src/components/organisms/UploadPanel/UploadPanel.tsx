@@ -5,7 +5,7 @@ import { ErrorMessage } from '../../molecules/ErrorMessage';
 import { FileDropZone } from '../../molecules/FileDropZone';
 import { PrivacyNote } from '../../molecules/PrivacyNote';
 import type { AnalysisErrorCode } from '../../../lib/types';
-import styles from './UploadPanel.module.css';
+import styles from './UploadPanel.module.scss';
 
 export interface UploadPanelProps {
   onFile: (file: File) => void;

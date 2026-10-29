@@ -175,7 +175,7 @@ from the start.
 
 ### Batch D: organisms
 
-- [ ] T026 [US1] Rename with `git mv` and update each `<Name>.tsx` import, without editing styles: `BarChart`, `ProcessingPanel`, `ResultsToolbar`, `SummaryStats`, `UploadPanel`, `VisualizationPanel`, `WordCloud`, `WordTable`, and `ZipfChart`, each in `src/components/organisms/<Name>/`. Build, test, and run the visual suite (zero diffs), then commit as rename-only. `ProcessingPanel`, `SummaryStats`, and `UploadPanel` are flat.
+- [X] T026 [US1] Rename with `git mv` and update each `<Name>.tsx` import, without editing styles: `BarChart`, `ProcessingPanel`, `ResultsToolbar`, `SummaryStats`, `UploadPanel`, `VisualizationPanel`, `WordCloud`, `WordTable`, and `ZipfChart`, each in `src/components/organisms/<Name>/`. Build, test, and run the visual suite (zero diffs), then commit as rename-only. `ProcessingPanel`, `SummaryStats`, and `UploadPanel` are flat.
 - [ ] T027 [P] [US1] Restructure `src/components/organisms/BarChart/BarChart.module.scss`: nest `.mark:hover .hit` and `.mark:focus-visible .hit` under `.hit` as `.mark:hover &` and `.mark:focus-visible &`.
 - [ ] T028 [P] [US1] Restructure `src/components/organisms/ResultsToolbar/ResultsToolbar.module.scss`: nest the `@media (max-width: 480px)` override inside `.topN` as a plain nested `@media (max-width: 480px)`.
 - [ ] T029 [P] [US1] Restructure `src/components/organisms/VisualizationPanel/VisualizationPanel.module.scss`: nest its `@media (max-width: 480px)` override inside the rule it overrides.

@@ -5,7 +5,7 @@ import { WordCloud } from '../WordCloud';
 import { ZipfChart } from '../ZipfChart';
 import type { View } from '../../../lib/selectView';
 import type { VisualizationType } from '../../../lib/types';
-import styles from './VisualizationPanel.module.css';
+import styles from './VisualizationPanel.module.scss';
 import { useReducedMotion } from '../../../hooks/useReducedMotion';
 
 export interface VisualizationPanelProps {

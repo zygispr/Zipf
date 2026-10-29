@@ -6,7 +6,7 @@ import { ProgressBar } from '../../atoms/ProgressBar';
 import { Spinner } from '../../atoms/Spinner';
 import { Text } from '../../atoms/Text';
 import type { AnalysisStage } from '../../../hooks/useAnalysis';
-import styles from './ProcessingPanel.module.css';
+import styles from './ProcessingPanel.module.scss';
 
 const STAGE_LABELS: Record<AnalysisStage, string> = {
   reading: 'Reading file…',

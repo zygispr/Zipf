@@ -44,7 +44,7 @@ const DYNAMIC_LOOKUPS: Record<string, Record<string, boolean>> = {
   } satisfies Record<keyof ResultsLayoutProps, boolean>,
 };
 
-const STYLESHEET_IMPORT = /import (\w+) from '(\.{1,2}\/[^']+\.module\.s?css)'/g;
+const STYLESHEET_IMPORT = /import (\w+) from '(\.{1,2}\/[^']+\.module\.scss)'/g;
 
 let config: ResolvedConfig;
 const compiled = new Map<string, ReturnType<typeof preprocessCSS>>();
@@ -72,6 +72,10 @@ beforeAll(async () => {
 });
 
 describe('stylesheets', () => {
+  it('are all SCSS', () => {
+    expect(glob('src/**/*.css'), 'convert these to .scss').toEqual([]);
+  });
+
   it('every stylesheet compiles', async () => {
     const stylesheets = glob('src/**/*.{css,scss}');
     expect(stylesheets.length).toBeGreaterThan(0);

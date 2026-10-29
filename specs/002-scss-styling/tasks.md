@@ -195,8 +195,8 @@ from the start.
 
 - [X] T034 [US1] Test first: add the "only SCSS" check to `tests/contract/stylesheets.test.ts`. `globSync('src/**/*.css')` must be empty, and the failure message lists the remaining files (FR-001, SC-001). Run `npm test -- tests/contract/stylesheets.test.ts` and confirm it fails, listing exactly `src/components/templates/AppLayout/AppLayout.module.css` and `src/components/templates/ResultsLayout/ResultsLayout.module.css`. Leave it uncommitted. T035's rename makes it pass, and it is committed in T037.
 - [X] T035 [US1] Rename with `git mv` and update each `<Name>.tsx` import, without editing styles: `AppLayout` and `ResultsLayout` in `src/components/templates/<Name>/`. Build, test, and run the visual suite (zero diffs), then commit as rename-only. `ResultsLayout` is flat.
-- [ ] T036 [US1] Restructure `src/components/templates/AppLayout/AppLayout.module.scss`: nest its two compound selectors and the reduced-motion overrides under their elements, and keep its `@keyframes` at the top level with the name unchanged.
-- [ ] T037 [US1] Finish US1:
+- [X] T036 [US1] Restructure `src/components/templates/AppLayout/AppLayout.module.scss`: nest its two compound selectors and the reduced-motion overrides under their elements, and keep its `@keyframes` at the top level with the name unchanged.
+- [X] T037 [US1] Finish US1:
   - In `tests/contract/stylesheets.test.ts`, change the T007 import pattern to match only `.module.scss`.
   - Confirm `find src -name '*.css'` prints nothing and the T034 "only SCSS" check passes.
   - Run `npm run check`, `npm run test:visual` (zero diffs), `npm run build`, and `npm run test:e2e`.

@@ -176,20 +176,20 @@ from the start.
 ### Batch D: organisms
 
 - [X] T026 [US1] Rename with `git mv` and update each `<Name>.tsx` import, without editing styles: `BarChart`, `ProcessingPanel`, `ResultsToolbar`, `SummaryStats`, `UploadPanel`, `VisualizationPanel`, `WordCloud`, `WordTable`, and `ZipfChart`, each in `src/components/organisms/<Name>/`. Build, test, and run the visual suite (zero diffs), then commit as rename-only. `ProcessingPanel`, `SummaryStats`, and `UploadPanel` are flat.
-- [ ] T027 [P] [US1] Restructure `src/components/organisms/BarChart/BarChart.module.scss`: nest `.mark:hover .hit` and `.mark:focus-visible .hit` under `.hit` as `.mark:hover &` and `.mark:focus-visible &`.
-- [ ] T028 [P] [US1] Restructure `src/components/organisms/ResultsToolbar/ResultsToolbar.module.scss`: nest the `@media (max-width: 480px)` override inside `.topN` as a plain nested `@media (max-width: 480px)`.
-- [ ] T029 [P] [US1] Restructure `src/components/organisms/VisualizationPanel/VisualizationPanel.module.scss`: nest its `@media (max-width: 480px)` override inside the rule it overrides.
-- [ ] T030 [P] [US1] Restructure `src/components/organisms/WordCloud/WordCloud.module.scss`: nest `.word:focus-visible` and the other state selector under `.word`.
-- [ ] T031 [P] [US1] Restructure `src/components/organisms/WordTable/WordTable.module.scss`. Nest:
+- [X] T027 [P] [US1] Restructure `src/components/organisms/BarChart/BarChart.module.scss`: nest `.mark:hover .hit` and `.mark:focus-visible .hit` under `.hit` as `.mark:hover &` and `.mark:focus-visible &`.
+- [X] T028 [P] [US1] Restructure `src/components/organisms/ResultsToolbar/ResultsToolbar.module.scss`: nest the `@media (max-width: 480px)` override inside `.topN` as a plain nested `@media (max-width: 480px)`.
+- [X] T029 [P] [US1] Restructure `src/components/organisms/VisualizationPanel/VisualizationPanel.module.scss`: nest its `@media (max-width: 480px)` override inside the rule it overrides.
+- [X] T030 [P] [US1] Restructure `src/components/organisms/WordCloud/WordCloud.module.scss`: nest `.word:focus-visible` and the other state selector under `.word`.
+- [X] T031 [P] [US1] Restructure `src/components/organisms/WordTable/WordTable.module.scss`. Nest:
   - `.wrapper:focus-visible` under `.wrapper`;
   - the table's descendant and state selectors (seven compound selectors) under the elements they style, keeping at most three levels;
   - the `@media (max-width: 480px)` overrides inside their rules.
-- [ ] T032 [P] [US1] Restructure `src/components/organisms/ZipfChart/ZipfChart.module.scss`. Nest:
+- [X] T032 [P] [US1] Restructure `src/components/organisms/ZipfChart/ZipfChart.module.scss`. Nest:
   - `.axis line`, `.axis .grid`, and `.axis text` under `.axis` as `line`, `.grid`, and `text`;
   - `.point:hover .dot, .point:focus-visible .dot` under `.dot` as `.point:hover &, .point:focus-visible &`;
   - `.point:focus-visible .hit` under `.hit`;
   - the legend's descendant rules under the legend.
-- [ ] T033 [US1] Checkpoint for batch D: zero visual diffs, `npm test`, `npm run format:check`. Commit.
+- [X] T033 [US1] Checkpoint for batch D: zero visual diffs, `npm test`, `npm run format:check`. Commit.
 
 ### Batch E: templates and finish
 

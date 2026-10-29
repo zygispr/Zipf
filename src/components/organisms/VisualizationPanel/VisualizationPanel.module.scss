@@ -10,16 +10,14 @@
     color-mix(in srgb, var(--chart-1) 6%, transparent),
     color-mix(in srgb, var(--chart-3) 6%, transparent)
   );
+
+  @media (max-width: 480px) {
+    padding: var(--space-3);
+  }
 }
 
 .view {
   display: grid;
   gap: var(--space-4);
   will-change: opacity;
-}
-
-@media (max-width: 480px) {
-  .panel {
-    padding: var(--space-3);
-  }
 }

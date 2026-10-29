@@ -5,15 +5,15 @@
 
 .hit {
   fill: transparent;
-}
 
-.mark:hover .hit {
-  fill: var(--color-surface-muted);
-}
+  .mark:hover & {
+    fill: var(--color-surface-muted);
+  }
 
-.mark:focus-visible .hit {
-  stroke: var(--color-focus);
-  stroke-width: 2px;
+  .mark:focus-visible & {
+    stroke: var(--color-focus);
+    stroke-width: 2px;
+  }
 }
 
 .label {

@@ -1,15 +1,17 @@
-.axis line {
-  stroke: var(--color-border);
-}
+.axis {
+  line {
+    stroke: var(--color-border);
+  }
 
-.axis .grid {
-  stroke: var(--color-surface-muted);
-}
+  .grid {
+    stroke: var(--color-surface-muted);
+  }
 
-.axis text {
-  fill: var(--color-text-muted);
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
+  text {
+    fill: var(--color-text-muted);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
 }
 
 .axisLabel {
@@ -32,20 +34,20 @@
 
 .hit {
   fill: transparent;
+
+  .point:focus-visible & {
+    stroke: var(--color-focus);
+    stroke-width: 2px;
+  }
 }
 
 .dot {
   fill: var(--chart-1);
-}
 
-.point:hover .dot,
-.point:focus-visible .dot {
-  r: 7px;
-}
-
-.point:focus-visible .hit {
-  stroke: var(--color-focus);
-  stroke-width: 2px;
+  .point:hover &,
+  .point:focus-visible & {
+    r: 7px;
+  }
 }
 
 .legend {
@@ -59,12 +61,12 @@
   font-size: var(--font-size-caption);
   font-weight: 600;
   list-style: none;
-}
 
-.legend li {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
 }
 
 .swatchPoint {

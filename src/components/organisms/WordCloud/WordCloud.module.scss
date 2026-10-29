@@ -1,14 +1,14 @@
 .word {
   cursor: pointer;
   outline: none;
-}
 
-.word:hover {
-  opacity: 0.8;
-}
+  &:hover {
+    opacity: 0.8;
+  }
 
-.word:focus-visible {
-  paint-order: stroke;
-  stroke: var(--color-focus);
-  stroke-width: 3px;
+  &:focus-visible {
+    paint-order: stroke;
+    stroke: var(--color-focus);
+    stroke-width: 3px;
+  }
 }
